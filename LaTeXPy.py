@@ -185,7 +185,7 @@ def init_symbol_table():
       if P9 and str(x.a[1])=="-1" else  w2(x.a[0],x)+"\\wedge "+w2(x.a[1],x)\
       if P9 else w2(x.a[0],x)+"**"+w2(x.a[1],x) # power
     infix("_", 300).__repr__ =        lambda x: str(x.a[0])+"["+w(x.a[1],x)+"]" # sub
-    infix("*", 311).__repr__ =        lambda x: w2(x.a[0],x)+"\\cdot "+w2(x.a[1],x) # times
+    infix("*", 311).__repr__ =        lambda x: w2(x.a[0],x)+"*"+w2(x.a[1],x) # times
     infix("\\cdot", 301).__repr__ =   lambda x: w2(x.a[0],x)+"*"+w2(x.a[1],x) # times
     infix("/", 313).__repr__ =        lambda x: w(x.a[0],x)+"/"+w(x.a[1],x) # over
     infix("\\backslash", 303).__repr__=lambda x: w(x.a[0],x)+"\ "+w(x.a[1],x) # under
@@ -312,15 +312,17 @@ def pyla(p,newl=False): # convert Python object to LaTeX string
     except:
       sp = p
     return "\\{"+", ".join(pyla(el,True) for el in sp)+"\\}" if len(p)>0 else "\\emptyset"
-  if type(p)==list: return "["+", ".join(pyla(el,True) for el in p)+"]"
-  if type(p)==bool: return "\mathbf{"+str(p)+"}"
+  if type(p)==list:  return "["+", ".join(pyla(el,True) for el in p)+"]"
+  if type(p)==tuple: return "("+", ".join(pyla(el,True) for el in p)+")"
+  if type(p)==bool:  return "\mathbf{"+str(p)+"}"
   if type(p)==Model: return modelLa(p)
   if type(p)==Proof: return proofLa(p)
   if type(p)==str:
     if p=="N": return "\\text{No counterexample after 10 seconds}"
-    st =  str(parse(p))
+    st =  str(parse(p if p[0]!="_" else "\\"+p[1:]))
+    if st[0]=="_": st = "\\"+st[1:]
     if newl and len(st)>=20: return "\\newline\n"+st
-    if newl and len(st)>=5: return " \\ "+st
+    #if newl and len(st)>=5: return " \\ "+st
     return st
   st =  str(p)
   #if newl and len(st)>=20: return "\\newline\n"+st
@@ -575,119 +577,3 @@ def test(st, info=True):
     print()
 
 P9=True
-
-lapy(r"""
-$\text{cdot\_sig}=[
-  x\le y\implies x\cdot z\le y\cdot z,
-  x\le y\implies z\cdot x\le z\cdot y]$
-
-$\text{plus\_sig}=[
-  x\le y\implies x+z\le y+z,
-  x\le y\implies z+x\le z+y]$
-
-$\text{vee\_sig}=[
-  x\le y\implies x\vee z\le y\vee z,
-  x\le y\implies z\vee x\le z\vee y]$
-
-$\text{wedge\_sig}=[
-  x\le y\implies x\wedge z\le y\wedge z,
-  x\le y\implies z\wedge x\le z\wedge y]$
-
-$\text{to\_sig}=[
-  x\le y\implies y\to z\le x\to z,
-  x\le y\implies z\to x\le z\to y]$
-
-$\text{bs\_sig}=[
-  x\le y\implies y\backslash z\le x\backslash z,
-  x\le y\implies z\backslash x\le z\backslash y]$
-
-$\text{sl\_sig}=[
-  x\le y\implies x/z\le y/z,
-  x\le y\implies z/y\le z/x]$
-
-$\text{f\_sig}=[x\le y\implies f(x)\le f(y)]$
-
-$\text{g\_sig}=[x\le y\implies g(x)\le g(y)]$
-
-$\text{neg\_sig}=[x\le y\implies -y\le -x]$
-
-$\text{sim\_sig}=[x\le y\implies \sim y\le \sim x]$ %can't handle {\sim}
-
-$\text{asso} = [(x\cdot y)\cdot z=x\cdot(y\cdot z)]$ associativity
-
-$\text{ride} = [x\cdot e=x]$ right identity
-
-$\text{rinv} = [x\cdot x^{-1}=e]$ right inverse
-
-$\mathbf{Grp} = \text{asso} + \text{ride} + \text{rinv}$
-
-$\mathbf{Jslat}=[(x\vee y)\vee z=x\vee(y\vee z),x\vee y=y\vee x,x\vee x=x]$
-
-$B=\text{Mod}(\mathbf{Jslat},3)?$
-
-$show(B)$
-
-$C = (\mathbf{Grp}\nvdash x\cdot y=y\cdot x)$
-
-$C\models x\cdot y=e \implies y=x^{-1}$
-
-$\mathbf{Grp}\vdash e\cdot x=x$
-
-$\mathbf{Pos}=[
-  x\le x, \newline
-  x\le y\ \text{and}\ y\le x\implies x=y, \newline
-  x\le y\ \text{and}\ y\le z\implies x\le z]$ partially ordered sets
-
-%$P=\text{Mod}(\mathbf{Pos},3,10)$
-
-%$show(P)$
-
-$S=\{1,\dots,51\}?$
-
-$\{x\in S \mid 2\vert x\}?$
-
-$P9=False$
-
-$\{x\in S \mid \forall{y\in S, y\vert x\implies y=1\ \text{or}\ y=x}\}?$
-
-$P9=True$
-
-$|S|?$
-
-$\text{lub}=\text{vee\_sig}+[x\le x\vee y,x\le y\vee x,x\vee x\le x]$
-
-$\mathbf{Jslat}=\mathbf{Pos}+\text{lub}$ join-semilattices
-
-$\text{glb}=\text{wedge\_sig}+[x\wedge y\le x,x\wedge y\le y,x\le x\wedge x]$
-
-$\mathbf{Mslat}=\mathbf{Pos}+\text{glb}$ meet-semilattices
-
-$\mathbf{Lat}=\mathbf{Pos}+\text{lub}+\text{glb}?$ lattices
-
-$\mathbf{bLat}=\mathbf{Lat}+[\bot\le x,x\le\top]$ bounded lattices
-
-$L=\text{Mod}(\mathbf{Lat},4)?$
-
-$C=\text{Con}(L_2)?$
-
-$show(C)$
-
-$P=\text{Pre}(L_2)?$
-
-$show(P)$
-
-$\mathbf{CyInLat}=\mathbf{Lat}+[x\le y \implies y'\le x', x''=x]$ cyclic involutive lattices
-
-$\mathbf{CyInLat}?$ cyclic involutive lattices
-
-$\mathbf{CyInRL}=\mathbf{Lat}+[x\le y \implies -y\le -x, --x=x]$ cyclic involutive lattices
-
-$R;R^\smallsmile$
-
-%$R=\{(i,j),(k,l)\}$
-
-$\text{Mod}(\mathbf{Grp},5)?$
-
-$\sim\sim-\sim--x$
-
-""")
