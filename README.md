@@ -1,7 +1,7 @@
 # LaTeXPy
 
 The aim of this project is to use LaTeX as a high-level mathematical calculator syntax 
-that can be used in undergraduate education by students who know or aquire some LaTeX, 
+that can be used in undergraduate education by students who know or learn some basic LaTeX, 
 but they should not need to know any Python.
 
 The file LaTeXPy.py contains experimental code that parses LaTeX math expressions (enclosed 
@@ -27,11 +27,18 @@ Below are some examples of what is covered (they can be copy-pasted as input). A
 
 The main function of the code is called lapy(...) and takes a r"""raw string""" as input, with some options for diagnostic output and pure LaTeX output with or without color coding.
 
-(Can copy-paste from here down)
+The following lines install LaTeXPy in a colab.google.research.com Jupyter notebook cell (copy-paste them).
 ```
-P9=False
-lapy(r"""
-Arithmetic expressions are written in calculator style, e.g., $1+2*3/4^2 ?$.
+!rm -rf LaTeXPy #remove any previous version
+!git clone https://github.com/jipsen/LaTeXPy.git
+import sys; sys.path.append('/content/LaTeXPy'); import LaTeXPy as lp
+```
+Here are some examples
+```
+lp.P9=False
+lp.lapy(r"""
+Arithmetic expressions are written in calculator style, e.g., $1+2*4/4^2 ?$. 
+The '?' indicates that the answer should be inserted in the typeset output.
 
 Sets are finite and can contain numbers, unevaluated expressions and 
 other (finite) sets e.g., $A=\{2,a,b,\gamma,\delta\}?$.
@@ -39,7 +46,14 @@ other (finite) sets e.g., $A=\{2,a,b,\gamma,\delta\}?$.
 Standard set-operations are available: $A\cap \{1,2,3,b\}?$, $A\cup \{1,2,3,b\}?$, 
 $A\setminus \{1,2,3,b\}?$, $A\oplus \{1,2,3,b\}?$.
 
-Ranges $\{3,\dots,10\}?$, cartesian product $\{1,2,3\}\times\{a,b\}?$, powerset $\mathcal P(\{1,2\})?$.
+Ranges $\{3,\dots,10\}?$, cartesian product $\{1,2,3\}\times\{a,b\}?$.
+
+Powerset $P=\mathcal{P}(\{1,2\})?$, cardinality $|P|?$.
+
+A lattice of subsets can be displayed using $show(P)$ (it is shown before the rest of the output).
+
+Lists use [...] syntax: $L=[a,b,c]$ and subscripts access elements. 
+The first element is $L_0?$, and if $i=2$ then $L_i?$.
 """)
 ```
 
