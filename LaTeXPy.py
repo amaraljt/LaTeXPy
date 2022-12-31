@@ -2,7 +2,6 @@
 
 # Terms are read using Vaughn Pratt's top-down parsing algorithm
 # by Peter Jipsen, version 2022-12-31 distributed under GPL v3 or later
-!pip install provers
 from provers import *
 from IPython.display import *
 import math, itertools, re
