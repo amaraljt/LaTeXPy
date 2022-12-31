@@ -175,7 +175,7 @@ def init_symbol_table():
     postfix("!",300).__repr__ =       lambda x: "math.factorial("+str(x.a[0])+")"
     postfix("'",300).__repr__ =       lambda x: str(x.a[0])+"'"
     prefix("\\ln",310).__repr__ =     lambda x: "math.log("+str(x.a[0])+")"
-    prefix("i",310).__repr__ =        lambda x: "{"+str(x.a[0])+"^{-1}}" #P9 name for inverse
+    prefix("inv",310).__repr__ =      lambda x: "{"+str(x.a[0])+"^{-1}}" #P9 name for inverse
     preorinfix("\\sim",310).__repr__= lambda x: "~"+w(x.a[0],x)
     preorinfix("-",310).__repr__ =    lambda x: "-"+w(x.a[0],x)\
       if len(x.a)==1 else str(x.a[0])+" - "+w(x.a[1], x) #negative or minus
@@ -329,7 +329,7 @@ def pyla(p,newl=False): # convert Python object to LaTeX string
   return st
 
 # Translate from Prover9 symbols to LaTeX symbols
-p92la = {"*":"\\cdot", "^":"\\wedge", "v":"\\vee", "i":"{}^{-1}", "<=":"\\le", 
+p92la = {"*":"\\cdot", "^":"\\wedge", "v":"\\vee", "inv":"{}^{-1}", "<=":"\\le", 
          "-":"-", "~":"\\sim", "f":"f", "g":"g",
          "&":"\\ \\text{and}\\ ", "|":"\\ \\text{or}\\ ",
          "->":"\\implies", "<->":"\\iff", "all":"\\forall", "exists":"\\exists"}
@@ -357,8 +357,7 @@ def converse(R):
 def power(s,t):
   print(type(s),s,type(t),t)
   if type(s)==str:
-    if t=="-1":
-      return "i("+s+")"
+    if t=="-1": return "inv("+s+")"
   return s**t
 
 def relcomposition(R,S):
