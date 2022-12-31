@@ -1,10 +1,11 @@
-# Python program to parse LaTeX formulas and produce Python/Prover9 expressions
+# Python program to parse LaTeX formulas and evaluate Python/Prover9 expressions
 
 # Terms are read using Vaughn Pratt's top-down parsing algorithm
 # by Peter Jipsen, version 2022-12-31 distributed under GPL v3 or later
+import math, itertools, re, sys, subprocess
+subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'provers'])
 from provers import *
 from IPython.display import *
-import math, itertools, re
 
 def is_postfix(t):
     return hasattr(t,'leftd') and len(t.a)==1
