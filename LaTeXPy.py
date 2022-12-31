@@ -181,7 +181,7 @@ def init_symbol_table():
       if len(x.a)==1 else str(x.a[0])+" - "+w(x.a[1], x) #negative or minus
     infix(":", 450).__repr__ =        lambda x: str(x.a[0])+": "+w3(x.a[1],x) # for f:A\to B
     infix("^", 300).__repr__ =        lambda x: "converse("+str(x.a[0])+")"\
-      if str(x.a[1].sy)=='\\smallsmile' else "i("+str(x.a[0])+")"\
+      if str(x.a[1].sy)=='\\smallsmile' else "inv("+str(x.a[0])+")"\
       if P9 and str(x.a[1])=="-1" else  w2(x.a[0],x)+"\\wedge "+w2(x.a[1],x)\
       if P9 else w2(x.a[0],x)+"**"+w2(x.a[1],x) # power
     infix("_", 300).__repr__ =        lambda x: str(x.a[0])+"["+w(x.a[1],x)+"]" # sub
@@ -279,7 +279,6 @@ def tokenize(st):
             symb = symbol_table[tok]
             if not symb: #symb = symbol(tok)
                 raise SyntaxError("Unknown operator")
-#            print tok, 'ST', symbol_table.keys()
             yield symb()
     symb = symbol_table["(end)"]
     yield symb()
@@ -486,7 +485,7 @@ def modelLa(A):
     if type(o[fn])!=list: st+=fn+"="+str(o[fn])+",\ \n"
     elif type(o[fn][0])!=list: 
       st+="\\begin{array}{c}\n"+(r"\\"+"\n").join((str(i)+p92la[fn]\
-        if fn in ["i","'"] else p92la[fn]+str(i))+"="+str(o[fn][i]) for i in range(n))+"\\end{array},\ \n"
+        if fn in ["inv","'"] else p92la[fn]+str(i))+"="+str(o[fn][i]) for i in range(n))+"\\end{array},\ \n"
     else: st+="\\begin{array}{c|"+n*"c"+"}\n"+\
       p92la[fn]+"&"+"&".join(str(i) for i in range(n))+r"\\\hline"+"\n"+\
         (r"\\"+"\n").join(str(i)+"&"+"&".join(str(o[fn][i][j]) 
