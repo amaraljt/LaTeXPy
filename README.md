@@ -27,8 +27,10 @@ Below are some examples of what is covered (they can be copy-pasted as input). A
 
 The main function of the code is called lapy(...) and takes a r"""raw string""" as input, with some options for diagnostic output and pure LaTeX output with or without color coding.
 
-(Can copy-paste from here down):
+(Can copy-paste from here down)
 ```
+P9=False
+lapy(r"""
 Arithmetic expressions are written in calculator style, e.g., $1+2*3/4^2 ?$.
 
 Sets are finite and can contain numbers, unevaluated expressions and 
@@ -38,6 +40,7 @@ Standard set-operations are available: $A\cap \{1,2,3,b\}?$, $A\cup \{1,2,3,b\}?
 $A\setminus \{1,2,3,b\}?$, $A\oplus \{1,2,3,b\}?$.
 
 Ranges $\{3,\dots,10\}?$, cartesian product $\{1,2,3\}\times\{a,b\}?$, powerset $\mathcal P(\{1,2\})?$.
+""")
 ```
 
 
