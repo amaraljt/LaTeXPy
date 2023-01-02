@@ -27,7 +27,7 @@ Below are some examples of what is covered (they can be copy-pasted as input). A
 
 The main function of the code is called lapy(...) and takes a r"""raw string""" as input, with some options for diagnostic output and pure LaTeX output with or without color coding.
 
-The following lines install LaTeXPy in a colab.google.research.com Jupyter notebook cell (copy-paste them).
+The following lines install LaTeXPy in a https://colab.research.google.com Jupyter notebook cell (copy-paste them). You need a gmail account to use this free Colab(orative) Jupyter notebook. (LaTeXPy should work in any Jupyter notebook, but the file LaTeXPy may need to be copied manually and modified slightly. Using it via Colab ensures you have the latest version, but does require an internet connection.)
 ```
 !rm -rf LaTeXPy #remove any previous version
 !git clone https://github.com/jipsen/LaTeXPy.git
