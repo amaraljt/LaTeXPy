@@ -74,7 +74,7 @@ def prefix(id, bp=0): # parse n-ary prefix operations
     def nulld(self): # null denotation
         global token
         if token.sy not in ["(","[","{"] and self.sy not in ["\\forall","\\exists"]:
-            print('token.sy',token.sy,'self.sy',self.sy)
+            #print('token.sy',token.sy,'self.sy',self.sy)
             self.a = [] if token.sy in [",",")","}",":","=","!="] else [expression(bp)]
             if self.sy=="|": advance("|")
             return self
@@ -191,7 +191,7 @@ def init_symbol_table():
     infix("*", 311).__repr__ =        lambda x: w2(x.a[0],x)+"\\cdot "+w2(x.a[1],x) # times
     infix("\\cdot", 311).__repr__ =   lambda x: w2(x.a[0],x)+"*"+w2(x.a[1],x) # times
     infix("/", 313).__repr__ =        lambda x: w(x.a[0],x)+"/"+w(x.a[1],x) # over
-    infix("\\backslash", 303).__repr__=lambda x: w(x.a[0],x)+"\ "+w(x.a[1],x) # under
+    infix("\\backslash", 313).__repr__=lambda x: w(x.a[0],x)+"\ "+w(x.a[1],x) # under
     infix("+", 312).__repr__ =        lambda x: w2(x.a[0],x)+" + "+w2(x.a[1],x) # plus
     infix("\\wedge", 312).__repr__ =  lambda x: w2(x.a[0],x)+" ^ "+w2(x.a[1],x) # meet
     infix("\\vee", 313).__repr__ =    lambda x: w2(x.a[0],x)+" v "+w2(x.a[1],x) # join
@@ -345,7 +345,7 @@ def p9la(st): # convert Prover9 ast to LaTeX string
 def pyp9(p): # convert Python object to Prover9 input
   if type(p)==frozenset or  type(p)==list:
     return [pyp9(elmt) for elmt in p]
-  print(str(p))
+  #print(str(p))
   return str(p)
 
 def strorval(p):
