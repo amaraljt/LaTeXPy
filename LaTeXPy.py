@@ -190,13 +190,13 @@ def init_symbol_table():
     infix("\\circ", 303).__repr__ =   lambda x: "relcomposition("+w(x.a[1],x)+","+w(x.a[0],x)+")" # function composition
     infix("*", 311).__repr__ =        lambda x: w2(x.a[0],x)+"\\cdot "+w2(x.a[1],x) # times
     infix("\\cdot", 311).__repr__ =   lambda x: w2(x.a[0],x)+"*"+w2(x.a[1],x) # times
-    infix("/", 313).__repr__ =        lambda x: w(x.a[0],x)+"/"+w(x.a[1],x) # over
-    infix("\\backslash", 313).__repr__=lambda x: w(x.a[0],x)+"\ "+w(x.a[1],x) # under
-    infix("+", 312).__repr__ =        lambda x: w2(x.a[0],x)+" + "+w2(x.a[1],x) # plus
-    infix("\\wedge", 312).__repr__ =  lambda x: w2(x.a[0],x)+" ^ "+w2(x.a[1],x) # meet
-    infix("\\vee", 313).__repr__ =    lambda x: w2(x.a[0],x)+" v "+w2(x.a[1],x) # join
-    infix("v", 313).__repr__ =        lambda x: w2(x.a[0],x)+"\\vee "+w2(x.a[1],x) # join
-    infix("\\to", 314).__repr__ =     lambda x: w(x.a[0],x)+" -> "+w(x.a[1],x)
+    infix("/", 312).__repr__ =        lambda x: w(x.a[0],x)+"/"+w(x.a[1],x) # over
+    infix("\\backslash", 312).__repr__=lambda x: w(x.a[0],x)+"\ "+w(x.a[1],x) # under
+    infix("+", 313).__repr__ =        lambda x: w2(x.a[0],x)+" + "+w2(x.a[1],x) # plus
+    infix("\\wedge", 314).__repr__ =  lambda x: w2(x.a[0],x)+" ^ "+w2(x.a[1],x) # meet
+    infix("\\vee", 315).__repr__ =    lambda x: w2(x.a[0],x)+" v "+w2(x.a[1],x) # join
+    infix("v", 315).__repr__ =        lambda x: w2(x.a[0],x)+"\\vee "+w2(x.a[1],x) # join
+    infix("\\to", 316).__repr__ =     lambda x: w(x.a[0],x)+" -> "+w(x.a[1],x)
     symbol("\\top").__repr__ =        lambda x: "T"
     symbol("\\bot").__repr__ =        lambda x: "0"
     
@@ -261,8 +261,8 @@ def tokenize(st):
             while j<len(st) and alpha_numeric(st[j]): j+=1
             tok = st[i:j]
             if tok=="\\" and j<len(st) and st[j]==" ": j+=1
-            if tok=="\\text": j = st.find("}",j)+1 #extend token to include {...} part
-            if tok=="\\mathcal": j = st.find("}",j)+1 #extend token to include {...} part
+            if tok=="\\text": j = st.find("}",j)+1 if st[j]=="{" else j #extend token to include {...} part
+            if tok=="\\mathcal": j = st.find("}",j)+1 if st[j]=="{" else j #extend token to include {...} part
             tok = st[i:j]
             symbol(tok)
             if j<len(st) and st[j]=='(': prefix(tok, 1200) #promote tok to function
@@ -321,7 +321,9 @@ def pyla(p,newl=False): # convert Python object to LaTeX string
   if type(p)==Proof: return proofLa(p)
   if type(p)==str:
     if p=="N": return "\\text{No counterexample after 10 seconds}"
-    st =  str(parse(p if p[0]!="_" else "\\"+p[1:]))
+    try:
+      st =  str(parse(p if p[0]!="_" else "\\"+p[1:]))
+    except: pass
     if st[0]=="_": st = "\\"+st[1:]
     if newl and len(st)>=20: return "\\newline\n"+st
     #if newl and len(st)>=5: return " \\ "+st
@@ -339,8 +341,10 @@ def p92lasym(st):
   return p92la[st] if st in p92la.keys() else st
 
 def p9la(st): # convert Prover9 ast to LaTeX string
-  if st.find("#")==-1: return str(parse(st.replace("$","")))
-  return str(parse(st[:st.find("#")]))+"\\text{ goal}"
+  try:
+    if st.find("#")==-1: return str(parse(st.replace("$","")))
+    return str(parse(st[:st.find("#")]))+"\\text{ goal}"
+  except: return st
 
 def pyp9(p): # convert Python object to Prover9 input
   if type(p)==frozenset or  type(p)==list:
@@ -360,7 +364,7 @@ def converse(R):
   return frozenset((x[1],x[0]) for x in R if len(x)==2)
 
 def power(s,t):
-  print(type(s),s,type(t),t)
+  #print(type(s),s,type(t),t)
   if type(s)==str:
     if t=="-1":
       return "inv("+s+")"
@@ -514,7 +518,10 @@ def nextmath(st,i): #find next j,k>=i such that st[j:k] is inline or display mat
 
 def process(st, info=False, nocolor=False):
   # convert st (a LaTeX string) to Python/Prover9 code and evaluate it
-  t=parse(st)
+  try:
+    t=parse(st)
+  except:
+    if info==2: t=parse(st)
   if info:
     print(ast(t))
     print(t)
@@ -860,6 +867,4 @@ $R;R^\smallsmile$
 
 $\text{Mod}(\mathbf{Grp},5)?$
 
-$\sim\sim-\sim--x$
-
-""",1)
+""")
