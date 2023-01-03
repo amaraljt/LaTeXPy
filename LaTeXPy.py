@@ -1,7 +1,7 @@
 # Python program to parse LaTeX formulas and evaluate Python/Prover9 expressions
 
 # Terms are read using Vaughn Pratt's top-down parsing algorithm
-# by Peter Jipsen, version 2023-1-2 distributed under GPL v3 or later
+# by Peter Jipsen, version 2023-1-3 distributed under GPL v3 or later
 import math, itertools, re, sys, subprocess
 subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'provers'])
 from provers import *
@@ -156,6 +156,8 @@ def postfix(id, bp):
 symbol_table = {}
 P9 = False
 
+params = '\" + * v ^ \' - ~ \\ / -> A B C D E F G H I J K P O Q R S T U V W a b c d e f g h i j k p q r s t 0 1 <= -< inv\"'
+
 def init_symbol_table():
     global symbol_table
     symbol_table = {}
@@ -176,13 +178,13 @@ def init_symbol_table():
     postfix("!",300).__repr__ =       lambda x: "math.factorial("+str(x.a[0])+")"
     postfix("'",300).__repr__ =       lambda x: str(x.a[0])+"'"
     prefix("\\ln",310).__repr__ =     lambda x: "math.log("+str(x.a[0])+")"
-    prefix("inv",310).__repr__ =      lambda x: "{"+str(x.a[0])+"^{-1}}" #P9 name for inverse
+    prefix("O",310).__repr__ =      lambda x: "{"+str(x.a[0])+"^{-1}}" #P9 name for inverse
     preorinfix("\\sim",310).__repr__= lambda x: "~"+w(x.a[0],x)
     preorinfix("-",310).__repr__ =    lambda x: "-"+w(x.a[0],x)\
       if len(x.a)==1 else str(x.a[0])+" - "+w(x.a[1], x) #negative or minus
     infix(":", 450).__repr__ =        lambda x: str(x.a[0])+": "+w3(x.a[1],x) # for f:A\to B
     infix("^", 300).__repr__ =        lambda x: "converse("+str(x.a[0])+")"\
-      if str(x.a[1].sy)=='\\smallsmile' else "inv("+str(x.a[0])+")"\
+      if str(x.a[1].sy)=='\\smallsmile' else "O("+str(x.a[0])+")"\
       if P9 and str(x.a[1])=="-1" else  w2(x.a[0],x)+"\\wedge "+w2(x.a[1],x)\
       if P9 else w2(x.a[0],x)+"**"+w2(x.a[1],x) # power
     infix("_", 300).__repr__ =        lambda x: str(x.a[0])+"["+w(x.a[1],x)+"]" # sub
@@ -211,7 +213,7 @@ def init_symbol_table():
     prefix("\\mathbf",350).__repr__ = lambda x: "mbf"+str(x.a[0].sy) # algebra or structure or theory
     prefix("\\mathbb",350).__repr__ = lambda x: "mbb"+str(x.a[0].sy) # blackboard bold
     prefix("\\text{Mod}",350).__repr__=lambda x: "[z for y in p9(pyp9("+str(x.a[0])+"),[],"+(str(x.a[2]) if len(x.a)>2\
-      else "100")+",0,["+str(x.a[1])+"])[2:] for z in y]"
+      else "100")+",0,["+str(x.a[1])+"],params=params)[2:] for z in y]"
     prefix("\\text{Con}",350).__repr__=lambda x: "congruences("+str(x.a[0])+")" # set of congruences of an algebra
     prefix("\\text{Pre}",350).__repr__=lambda x: "precongruences("+str(x.a[0])+")" # set of precongruences of a po-algebra
     infix("\\vert", 365).__repr__ =   lambda x: w(x.a[1],x)+"%"+w(x.a[0],x)+"==0" # divides
@@ -241,7 +243,7 @@ def init_symbol_table():
     infix("\\mid", 550).__repr__ =    lambda x: str(x.a[0])+" mid "+str(x.a[1]) # such that
     infix("\\models", 550).__repr__ = lambda x: "check("+str(x.a[0])+",\""+str(x.a[1])+"\")" # check if A satisfies phi
     infix("\\vdash", 550).__repr__ =  lambda x: "p9(pyp9("+str(x.a[0])+"),[pyp9(\""+str(x.a[1])+"\")],2,60)[0]" # proves
-    infix("\\nvdash", 550).__repr__ = lambda x: "p9(pyp9("+str(x.a[0])+"),[pyp9(\""+str(x.a[1])+"\")],10,0)[0]" # disproves
+    infix("\\nvdash", 550).__repr__ = lambda x: "p9(pyp9("+str(x.a[0])+"),[pyp9(\""+str(x.a[1])+"\")],10,0,params=params)[0]" # disproves
     prefix("show",310).__repr__ =     lambda x: "show("+str(x.a[0])+")" #show poset or (semi)lattice
     postfix("?", 600).__repr__ =      lambda x: str(x.a[0])+"?" # calculate value and show it
     symbol("(end)")
@@ -333,7 +335,7 @@ def pyla(p,newl=False): # convert Python object to LaTeX string
   return st
 
 # Translate from Prover9 symbols to LaTeX symbols
-p92la = {"*":"\\cdot", "^":"\\wedge", "v":"\\vee", "inv":"{}^{-1}", "<=":"\\le", "~":"\\sim",
+p92la = {"*":"\\cdot", "^":"\\wedge", "v":"\\vee", "O":"{}^{-1}", "<=":"\\le", "~":"\\sim",
          "&":"\\ \\text{and}\\ ", "|":"\\ \\text{or}\\ ",
          "->":"\\implies", "<->":"\\iff", "all":"\\forall", "exists":"\\exists"}
 
@@ -367,7 +369,7 @@ def power(s,t):
   #print(type(s),s,type(t),t)
   if type(s)==str:
     if t=="-1":
-      return "inv("+s+")"
+      return "O("+s+")"
   return s**t
 
 def relcomposition(R,S):
@@ -496,7 +498,7 @@ def modelLa(A):
     if type(o[fn])!=list: st+=fn+"="+str(o[fn])+",\ \n"
     elif type(o[fn][0])!=list: 
       st+="\\begin{array}{c}\n"+(r"\\"+"\n").join((str(i)+p92lasym(fn)\
-        if fn in ["inv","'"] else p92lasym(fn)+str(i))+"="+str(o[fn][i]) for i in range(n))+"\\end{array},\ \n"
+        if fn in ["O","'"] else p92lasym(fn)+str(i))+"="+str(o[fn][i]) for i in range(n))+"\\end{array},\ \n"
     else: st+="\\begin{array}{c|"+n*"c"+"}\n"+\
       p92lasym(fn)+"&"+"&".join(str(i) for i in range(n))+r"\\\hline"+"\n"+\
         (r"\\"+"\n").join(str(i)+"&"+"&".join(str(o[fn][i][j]) 
