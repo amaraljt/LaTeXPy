@@ -6,6 +6,12 @@ import math, itertools, re, sys, subprocess
 subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'provers'])
 from provers import *
 from IPython.display import *
+# Python program to parse LaTeX formulas and produce Python/Prover9 expressions
+
+# Terms are read using Vaughn Pratt's top-down parsing algorithm
+# by Peter Jipsen 2022-12-15 distributed under LGPL 3 or later
+from IPython.display import *
+import math, itertools, re
 
 def is_postfix(t):
     return hasattr(t,'leftd') and len(t.a)==1
@@ -868,5 +874,4 @@ $R;R^\smallsmile$
 %$R = [(i,j),(k,l)\}$
 
 $\text{Mod}(\mathbf{Grp},5)?$
-
 """)
