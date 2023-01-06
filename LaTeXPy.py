@@ -430,7 +430,7 @@ def compatiblepreorders(A, precon=True, sym=False):
   compat = ["C(x,y)&C(y,z)->C(x,z)"]+(["x<=y->C(x,y)"] if precon else ["C(x,x)"])
   for o in A.operations.keys():
     if o in signum.keys(): compat += [signum[o]]
-    else: raise SyntaxError("Operation not handled")
+    elif type(A.operations[o])!=int: raise SyntaxError("Operation not handled")
   c=prover9(A.diagram("")+compat,[],100000,0,m,noniso=False)
   if sym:
     for x in c:
