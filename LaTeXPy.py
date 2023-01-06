@@ -1,7 +1,32 @@
 # Python program to parse LaTeX formulas and evaluate Python/Prover9 expressions
 
-# Terms are read using Vaughn Pratt's top-down parsing algorithm
-# by Peter Jipsen, version 2023-1-6 distributed under GPL v3 or later
+# by Peter Jipsen, version 2023-1-6, distributed under LGPL 3 or later.
+# Terms are read using Vaughn Pratt's top-down parsing algorithm.
+
+# List of symbols handled by the parser (at this point)
+# =====================================================
+# \And \approx \backslash \bb \bigcap \bigcup \bot \cap \cc \cdot  
+# \circ \Con \cup \equiv \exists \forall \ge \implies \in \le \ln \m 
+# \mathbb \mathbf \mathcal \mid \Mod \models \ne \neg \ngeq \nleq \Not 
+# \nvdash \oplus \Or \Pre \setminus \sim \subset \subseteq \supset \supseteq 
+# \times \to \top \vdash \vee \vert \wedge + * / ^ _ ! = < > ( ) [ ] \{ \} | | $
+
+# The macros below are used to simplify the input tokens that need to be typed.
+macros=r"""
+\renewcommand{\And}{\ \text{and}\ }
+\newcommand{\Or}{\ \text{or}\ }
+\newcommand{\Not}{\text{not}\ }
+\newcommand{\Mod}{\text{Mod}}
+\newcommand{\Con}{\text{Con}}
+\newcommand{\Pre}{\text{Pre}}
+\newcommand{\m}{\mathbf}
+\newcommand{\bb}{\mathbb}
+\newcommand{\cc}{\mathcal}
+\newcommand{\s}{\text}
+\newcommand{\bsl}{\backslash}
+\newcommand{\sm}{{\sim}}
+"""
+
 import math, itertools, re, sys, subprocess
 subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'provers'])
 from provers import *
@@ -157,7 +182,7 @@ def postfix(id, bp):
 symbol_table = {}
 P9 = False
 
-def init_symbol_table():
+def init_symbol_table():    #need to implement \tuple
     global symbol_table
     symbol_table = {}
     symbol("(").nulld = nulld
@@ -173,96 +198,90 @@ def init_symbol_table():
     symbol("]")
     symbol("\\}")
     symbol(",")
-
     postfix("!",300).__repr__ =       lambda x: "math.factorial("+str(x.a[0])+")"
     postfix("'",300).__repr__ =       lambda x: str(x.a[0])+"'"
     prefix("\\ln",310).__repr__ =     lambda x: "math.log("+str(x.a[0])+")"
     prefix("O",310).__repr__ =        lambda x: "{"+str(x.a[0])+"^{-1}}" #P9 name for inverse
-    preorinfix("\\sim",310).__repr__= lambda x: "~"+w(x,0)
     preorinfix("-",310).__repr__ =    lambda x: "-"+w(x,0)\
       if len(x.a)==1 else str(x.a[0])+" - "+w(x,1) #negative or minus
+    preorinfix("\\sim",310).__repr__= lambda x: "~"+w(x,0)\
+      if len(x.a)==1 else str(x.a[0])+" ~ "+w(x,1) #left negative or equivalence relation
+    prefix("\\sm",310).__repr__=      lambda x: "~"+w(x,0) #version of \sim with better spacing
     infix(":", 450).__repr__ =        lambda x: str(x.a[0])+": "+w3(x,1) # for f:A\to B
     infix("^", 300).__repr__ =        lambda x: "converse("+str(x.a[0])+")"\
       if len(x.a)>1 and str(x.a[1].sy)=='\\smallsmile' else "O("+str(x.a[0])+")"\
       if P9 and len(x.a)>0 and str(x.a[1])=="-1" else w2(x,0)+"\\wedge "+w2(x,1)\
-      if P9 else w2(x,0)+"**"+w2(x,1) # power
+      if P9 else w2(x,0)+"**"+w2(x,1)                                    # power
     infix("_", 300).__repr__ =        lambda x: str(x.a[0])+"["+w(x,1)+"]" # sub
     infix(";", 303).__repr__ =        lambda x: "relcomposition("+w(x,0)+","+w(x,1)+")" # relation composition
     infix("\\circ", 303).__repr__ =   lambda x: "relcomposition("+w(x,1)+","+w(x,0)+")" # function composition
     infix("*", 311).__repr__ =        lambda x: w2(x,0)+"\\cdot "+w2(x,1) # times
-    infix("\\cdot", 311).__repr__ =   lambda x: w2(x,0)+"*"+w2(x,1) # times
-    infix("/", 312).__repr__ =        lambda x: w(x,0)+"/"+w(x,1) # over
-    infix("\\backslash", 312).__repr__=lambda x: w(x,0)+"\ "+w(x,1) # under
-    infix("+", 313).__repr__ =        lambda x: w2(x,0)+" + "+w2(x,1) # plus
-    infix("\\wedge", 314).__repr__ =  lambda x: w2(x,0)+" ^ "+w2(x,1) # meet
-    infix("\\vee", 315).__repr__ =    lambda x: w2(x,0)+" v "+w2(x,1) # join
+    infix("\\cdot", 311).__repr__ =   lambda x: w2(x,0)+"*"+w2(x,1)      # times
+    infix("/", 312).__repr__ =        lambda x: w(x,0)+"/"+w(x,1)        # over
+    infix("\\backslash", 312).__repr__=lambda x: w(x,0)+"\ "+w(x,1)      # under
+    infix("\\bsl", 312).__repr__=     lambda x: w(x,0)+"\ "+w(x,1)       # under
+    infix("+", 313).__repr__ =        lambda x: w2(x,0)+" + "+w2(x,1)    # plus
+    infix("\\wedge", 314).__repr__ =  lambda x: w2(x,0)+" ^ "+w2(x,1)    # meet
+    infix("\\vee", 315).__repr__ =    lambda x: w2(x,0)+" v "+w2(x,1)    # join
     infix("v", 315).__repr__ =        lambda x: w2(x,0)+"\\vee "+w2(x,1) # join
     infix("\\to", 316).__repr__ =     lambda x: w(x,0)+" -> "+w(x,1)
     symbol("\\top").__repr__ =        lambda x: "T"
     symbol("\\bot").__repr__ =        lambda x: "0"
-    
     infix("\\times", 322).__repr__ =  lambda x: "frozenset(itertools.product("+w(x,0)+","+w(x,1)+"))" #product
-    infix("\\cap", 323).__repr__ =    lambda x: w(x,0)+" & "+w(x,1) # intersection
-    infix("\\cup", 324).__repr__ =    lambda x: w(x,0)+" | "+w(x,1) # union
-    infix("\\setminus", 325).__repr__=lambda x: w(x,0)+" - "+w(x,1) # setminus
-    infix("\\oplus", 326).__repr__ =  lambda x: w(x,0)+" ^ "+w(x,1) # setminus
+    infix("\\cap", 323).__repr__ =    lambda x: w(x,0)+" & "+w(x,1)         # intersection
+    infix("\\cup", 324).__repr__ =    lambda x: w(x,0)+" | "+w(x,1)         # union
+    infix("\\setminus", 325).__repr__=lambda x: w(x,0)+" - "+w(x,1)         # setminus
+    infix("\\oplus", 326).__repr__ =  lambda x: w(x,0)+" ^ "+w(x,1)         # symmetric difference
     prefix("\\bigcap",350).__repr__ = lambda x: "intersection("+str(x.a[0])+")" # intersection of a set of sets
-    prefix("\\bigcup",350).__repr__ = lambda x: "union("+str(x.a[0])+")" # union of a set of sets
-    prefix("\\mathcal{P}",350).__repr__= lambda x: "powerset("+str(x.a[0])+")"
-    prefix("\\cc{P}",350).__repr__= lambda x: "powerset("+str(x.a[0])+")"
-    prefix("\\mathbf",350).__repr__ = lambda x: "mbf"+str(x.a[0].sy) # algebra or structure or theory
-    prefix("\\m",350).__repr__ = lambda x: "mbf"+str(x.a[0].sy) # algebra or structure or theory
-    prefix("\\mathbb",350).__repr__ = lambda x: "mbb"+str(x.a[0].sy) # blackboard bold
-    prefix("\\bb",350).__repr__ = lambda x: "mbb"+str(x.a[0].sy) # blackboard bold
-    prefix("\\Mod",350).__repr__=lambda x: "[z for y in p9(pyp9("+str(x.a[0])+"),[],"+(str(x.a[2]) if len(x.a)>2\
+    prefix("\\bigcup",350).__repr__ = lambda x: "union("+str(x.a[0])+")"    # union of a set of sets
+    prefix("\\mathcal{P}",350).__repr__=lambda x: "powerset("+str(x.a[0])+")" #powerset of a set
+    prefix("\\cc{P}",350).__repr__=   lambda x: "powerset("+str(x.a[0])+")" # powerset of a set
+    prefix("\\mathbf",350).__repr__ = lambda x: "mbf"+str(x.a[0].sy)        # algebra or structure or theory
+    prefix("\\m",350).__repr__ =      lambda x: "mbf"+str(x.a[0].sy)        # algebra or structure or theory
+    prefix("\\mathbb",350).__repr__ = lambda x: "mbb"+str(x.a[0].sy)        # blackboard bold
+    prefix("\\bb",350).__repr__ =     lambda x: "mbb"+str(x.a[0].sy)        # blackboard bold
+    prefix("\\Mod",350).__repr__=     lambda x: "[z for y in p9(pyp9("+str(x.a[0])+"),[],"+(str(x.a[2]) if len(x.a)>2\
       else "100")+",0,["+(str(x.a[1]) if len(x.a)>1 else "2")+"])[2:] for z in y]"
-    prefix("\\Con",350).__repr__=lambda x: "congruences("+str(x.a[0])+")" # set of congruences of an algebra
-    prefix("\\Pre",350).__repr__=lambda x: "precongruences("+str(x.a[0])+")" # set of precongruences of a po-algebra
-    infix("\\vert", 365).__repr__ =   lambda x: w(x,1)+"%"+w(x,0)+"==0" # divides
-    infix("\\in", 370).__repr__ =     lambda x: w(x,0)+" in "+w(x,1) # element of
-    infix("\\subseteq", 370).__repr__=lambda x: w(x,0)+" <= "+w(x,1) # subset of
-    infix("\\subset", 370).__repr__ = lambda x: w(x,0)+" < "+w(x,1) # proper subset of
+    prefix("\\Con",350).__repr__=     lambda x: "congruences("+str(x.a[0])+")" # set of congruences of an algebra
+    prefix("\\Pre",350).__repr__=     lambda x: "precongruences("+str(x.a[0])+")" # set of precongruences of a po-algebra
+    infix("\\vert", 365).__repr__ =   lambda x: w(x,1)+"%"+w(x,0)+"==0"      # divides
+    infix("\\in", 370).__repr__ =     lambda x: w(x,0)+" in "+w(x,1)         # element of
+    infix("\\subseteq", 370).__repr__=lambda x: w(x,0)+" <= "+w(x,1)         # subset of
+    infix("\\subset", 370).__repr__ = lambda x: w(x,0)+" < "+w(x,1)          # proper subset of
+    infix("\\supseteq", 370).__repr__=lambda x: w(x,1)+" <= "+w(x,0)         # supset of
+    infix("\\supset", 370).__repr__ = lambda x: w(x,1)+" < "+w(x,0)          # proper subset of
     infix("=", 405).__repr__ =        lambda x: w(x,0)+(" = " if P9 else " == ")+w(x,1) # assignment or identity
-    infix("\\ne", 405).__repr__ =     lambda x: w(x,0)+" != "+w(x,1) # nonequality
-    infix("!=", 405).__repr__ =       lambda x: w(x,0)+"\\ne "+w(x,1) # nonequality
-    infix("\\le", 405).__repr__ =     lambda x: w2(x,0)+" <= "+str(x.a[1])
-    infix("<=", 405).__repr__ =       lambda x: w2(x,0)+"\\le "+str(x.a[1])
-    infix("\\ge", 405).__repr__ =     lambda x: w2(x,0)+" >= "+str(x.a[1])
-    infix("<", 405).__repr__ =        lambda x: w2(x,0)+" < "+str(x.a[1])
-    infix(">", 405).__repr__ =        lambda x: w2(x,0)+" > "+str(x.a[1])
-    prefix("\\neg",450).__repr__=     lambda x: "not "+w(x,0) # negation
-    prefix("\\Not",450).__repr__=lambda x: ("-" if P9 else "not ")+w3(x,0) # negation
+    infix("\\ne", 405).__repr__ =     lambda x: w(x,0)+" != "+w(x,1)         # nonequality
+    infix("!=", 405).__repr__ =       lambda x: w(x,0)+"\\ne "+w(x,1)        # nonequality
+    infix("\\le", 405).__repr__ =     lambda x: w2(x,0)+" <= "+str(x.a[1])   # less or equal
+    infix("<=", 405).__repr__ =       lambda x: w2(x,0)+"\\le "+str(x.a[1])  # less or equal in Python
+    infix("\\ge", 405).__repr__ =     lambda x: w2(x,0)+" >= "+str(x.a[1])   # greater or equal
+    infix("<", 405).__repr__ =        lambda x: w2(x,0)+" < "+str(x.a[1])    # less than
+    infix(">", 405).__repr__ =        lambda x: w2(x,0)+" > "+str(x.a[1])    # greater than
+    infix("\\nleq", 405).__repr__ =   lambda x: "-("+w2(x,0)+"<="+str(x.a[1])+")" # not less or equal
+    infix("\\ngeq", 405).__repr__ =   lambda x: "-("+w2(x,1)+"<="+str(x.a[0])+")" # not greater or equal
+    infix("\\approx", 405).__repr__ = lambda x: w2(x,0)+" Aprx "+str(x.a[1]) # approximately
+    infix("\\equiv", 405).__repr__ =  lambda x: w2(x,0)+" Eq "+str(x.a[1])   # equivalence relation
+    prefix("\\neg",450).__repr__=     lambda x: "not "+w(x,0)                # negation symbol
+    prefix("\\Not",450).__repr__=     lambda x: ("-" if P9 else "not ")+w3(x,0) # logical negation
     prefix("\\forall",450).__repr__ = lambda x: "all("+str(x.a[-1]).replace(" = "," == ")+\
-            "".join(" for "+str(x) for x in x.a[:-1])+")" # universal quantifier
+            "".join(" for "+str(x) for x in x.a[:-1])+")"                    # universal quantifier
     prefix("\\exists",450).__repr__ = lambda x: "any("+str(x.a[-1]).replace(" = "," == ")+\
-            "".join(" for "+str(x) for x in x.a[:-1])+")" # existential quantifier
-    infix("\\Or", 503).__repr__=lambda x: w(x,0)+(" | " if P9 else " or ")+w(x,1) # disjunction
-    #infix("||", 503).__repr__=        lambda x: w(x,0)+r"\ \text{or}\ "+w(x,1) # P9 disjunction to LaTeX
-    infix("\\And", 503).__repr__=lambda x: w(x,0)+(" & " if P9 else " and ")+w(x,1) # conjunction
+            "".join(" for "+str(x) for x in x.a[:-1])+")"                    # existential quantifier
+    infix("\\Or", 503).__repr__=      lambda x: w(x,0)+(" | " if P9 else " or ")+w(x,1) # disjunction
+    #infix("||", 503).__repr__=       lambda x: w(x,0)+r"\ \text{or}\ "+w(x,1) # P9 disjunction to LaTeX (not implemented)
+    infix("\\And", 503).__repr__=     lambda x: w(x,0)+(" & " if P9 else " and ")+w(x,1) # conjunction
     infix("&", 503).__repr__=         lambda x: w(x,0)+r"\ \text{and}\ "+w(x,1) # P9 conjunction to LaTeX
     infix("\\implies", 504).__repr__ =lambda x: w3(x,0)+(" -> " if P9 else " <= ")+w3(x,1) # implication
-    infix("->", 504).__repr__ =       lambda x: w2(x,0)+"\\implies "+w2(x,1)
+    infix("->", 504).__repr__ =       lambda x: w2(x,0)+"\\implies "+w2(x,1) # if and only if
     infix("\\iff", 505).__repr__ =    lambda x: w3(x,0)+(" <-> " if P9 else " == ")+w3(x,1) # if and only if
     infix("\\mid", 550).__repr__ =    lambda x: str(x.a[0])+" mid "+str(x.a[1]) # such that
     infix("\\models", 550).__repr__ = lambda x: "check("+str(x.a[0])+",\""+str(x.a[1])+"\")" # check if A satisfies phi
     infix("\\vdash", 550).__repr__ =  lambda x: "p9(pyp9("+str(x.a[0])+"),[pyp9(\""+str(x.a[1])+"\")],2,60)[0]" # proves
     infix("\\nvdash", 550).__repr__ = lambda x: "p9(pyp9("+str(x.a[0])+"),[pyp9(\""+str(x.a[1])+"\")],10,0)[0]" # disproves
-    prefix("show",310).__repr__ =     lambda x: "show("+str(x.a[0])+")" #show poset or (semi)lattice
-    postfix("?", 600).__repr__ =      lambda x: str(x.a[0])+"?" # calculate value and show it
+    prefix("show",310).__repr__ =     lambda x: "show("+str(x.a[0])+")"      # show poset or (semi)lattice
+    postfix("?", 600).__repr__ =      lambda x: str(x.a[0])+"?"              # calculate value and show it
     symbol("(end)")
-
-macros=r"""
-\renewcommand{\And}{\ \text{and}\ }
-\newcommand{\Or}{\ \text{or}\ }
-\newcommand{\Not}{\text{not}\ }
-\newcommand{\Mod}{\text{Mod}}
-\newcommand{\Con}{\text{Con}}
-\newcommand{\Pre}{\text{Pre}}
-\newcommand{\m}{\mathbf}
-\newcommand{\bb}{\mathbb}
-\newcommand{\cc}{\mathcal}
-\newcommand{\s}{\text}
-"""
 
 init_symbol_table()
 
@@ -332,15 +351,17 @@ def ast(t):
     if len(t.a)==0: return '"'+t.sy+'"'
     return '("'+t.sy+'",'+", ".join(ast(s) for s in t.a)+")"
 
+cntr = 0
 def pyla(p,newl=False): # convert Python object to LaTeX string
+  global cntr
   if type(p)==frozenset:
     try:
       sp = sorted(p)
     except:
       sp = p
-    return "\\{"+", ".join(pyla(el,True) for el in sp)+"\\}" if len(p)>0 else "\\emptyset"
-  if type(p)==list:  return "["+", ".join(pyla(el,True) for el in p)+"]"
-  if type(p)==tuple: return "("+", ".join(pyla(el,True) for el in p)+")"
+    cntr=0; st="\\{"+", ".join(pyla(el,True) for el in sp)+"\\}" if len(p)>0 else "\\emptyset";cntr=0;return st
+  if type(p)==list:  cntr=0; st="["+", ".join(pyla(el,True) for el in p)+"]";cntr=0; return st
+  if type(p)==tuple: cntr=0; st="("+", ".join(pyla(el,True) for el in p)+")";cntr=0; return st
   if type(p)==bool:  return "\mathbf{"+str(p)+"}"
   if type(p)==Model: return modelLa(p)
   if type(p)==Proof: return proofLa(p)
@@ -463,6 +484,18 @@ def powerset(X):
     PX += itertools.combinations(X, i+1)
   return frozenset(frozenset(x) for x in PX)
 
+def poset2model(A):
+    if len(A)==0: raise Error("Can't show Hasse diagram of an empty set")
+    k = list(A)
+    S = range(len(A))
+    if all(type(x)==frozenset for x in k[0]): 
+      U = union(k[0])
+      if all(all(type(y)==frozenset for y in x) and union(x)==U for x in k[1:]): #assume K is a set of partitions
+        li = [[all(any(x<=y for y in k[j]) for x in k[i]) for i in S] for j in S]
+      else: li = [[k[i]<=k[j] for i in S] for j in S]
+    else: li = [[k[i]<=k[j] for i in S] for j in S]
+    return Model(cardinality=len(k),relations={"<=":li})
+
 def show(K): # show a list of Mace4 models using graphviz or show a set of subsets or partitions
   if type(K)==Model: K=[K]
   if type(K)==list and len(K)>0 and type(K[0])==Model:
@@ -473,20 +506,10 @@ def show(K): # show a list of Mace4 models using graphviz or show a set of subse
     if "*" in K[0].operations.keys(): st += "*d "
     if st!="" and st[-1]==" ": st = st[:-1]
     m4diag(K,st)
-  elif type(K)==frozenset:
-    if len(K)==0: raise Error("Can't show Hasse diagram of an empty set")
-    k = list(K)
-    S = range(len(K))
-    if all(type(x)==frozenset for x in k[0]): 
-      U = union(k[0])
-      if all(all(type(y)==frozenset for y in x) and union(x)==U for x in k[1:]): #assume K is a set of partitions
-        li = [[all(any(x<=y for y in k[j]) for x in k[i]) for i in S] for j in S]
-      else: li = [[k[i]<=k[j] for i in S] for j in S]
-    else: li = [[k[i]<=k[j] for i in S] for j in S]
-    m4diag([Model(cardinality=len(k),relations={"<=":li})])
+  elif type(K)==frozenset: m4diag([poset2model(K)])
   elif type(K)==list:
-    for x in K: show(x)
-    
+    m4diag([poset2model(x) for x in K])
+
 def check(structure,FOformula_list,info=False):
   FOformula_l=[FOformula_list] if type(FOformula_list)==str else FOformula_list
   for st in FOformula_l:
@@ -510,6 +533,7 @@ def proofLa(P):
   return st+"\\end{array}"
 
 def modelLa(A):
+  global cntr
   n = A.cardinality
   o = A.operations
   r = A.relations
@@ -518,19 +542,22 @@ def modelLa(A):
     #if type(o[fn])!=list: st+=fn+"="+str(o[fn])+",\ \n"
     if type(r[rl][0])!=list: 
       st+=p92la[rl]+" = \\{"+",".join(str(i) for i in range(n) if r[rl][i])+"\\},\ \n"
-    else: st+="\\begin{array}{c|"+n*"c"+"}\n"+\
-      p92lasym(rl)+"&"+"&".join(str(i) for i in range(n))+r"\\\hline"+"\n"+\
-        (r"\\"+"\n").join(str(i)+"&"+"&".join((str(r[rl][i][j]) if r[rl][i][j] else "")
+    else: 
+      st+="\\begin{array}{c|"+n*"c"+"}\n"+\
+      p92lasym(rl)+"_{"+str(cntr)+"}&"+"&".join(str(i) for i in range(n))+r"\\\hline"+"\n"+\
+        (r"\\"+"\n").join(str(i)+"&"+"&".join(("t" if r[rl][i][j] else "")
         for j in range(n)) for i in range(n))+"\\end{array},\ \n"
   for fn in o.keys():
     if type(o[fn])!=list: st+=fn+"="+str(o[fn])+",\ \n"
     elif type(o[fn][0])!=list: 
       st+="\\begin{array}{c}\n"+(r"\\"+"\n").join((str(i)+p92lasym(fn)\
         if fn in ["O","'"] else p92lasym(fn)+str(i))+"="+str(o[fn][i]) for i in range(n))+"\\end{array},\ \n"
-    else: st+="\\begin{array}{c|"+n*"c"+"}\n"+\
-      p92lasym(fn)+"&"+"&".join(str(i) for i in range(n))+r"\\\hline"+"\n"+\
+    else: 
+      st+="\\begin{array}{c|"+n*"c"+"}\n"+\
+      p92lasym(fn)+"_{"+str(cntr)+"}&"+"&".join(str(i) for i in range(n))+r"\\\hline"+"\n"+\
         (r"\\"+"\n").join(str(i)+"&"+"&".join(str(o[fn][i][j]) 
         for j in range(n)) for i in range(n))+"\\end{array},\ \n"
+  cntr+=1
   return st[:-4]+"\\right]}\n"
 
 # Convert (a subset of) LaTeX input to valid Python+provers(+sympy later)
