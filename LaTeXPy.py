@@ -617,7 +617,7 @@ def test(st, info=True):
 
 P9=True # switch the parser into Prover9 mode
 
-lapy(r"""
+lp.lapy(r"""
 The following list defines the fundamental operations of partially ordered algebras
 and their tonicity, i.e., whether they are order preserving or order reversing in
 each argument.
