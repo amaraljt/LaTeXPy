@@ -35,7 +35,67 @@ import sys; sys.path.append('/content/LaTeXPy'); import LaTeXPy as lp
 ```
 Here are some examples
 ```
-lp.P9=False
+la.lapy(r"""
+$\m{Pos}=[
+  x\le x, \newline
+  x\le y \And y\le x\implies x=y,\newline
+  x\le y \And y\le z\implies x\le z]$ partially ordered sets
+
+$\s{cdot} = [x\le y\implies x\cdot z\le y\cdot z, x\le y\implies z\cdot x\le z\cdot y]$
+
+$A = \Mod(\m{Pos}+\s{cdot}+
+[0\le 1, 0\nleq 2, 2\nleq 0, 1\nleq 2, 2\nleq 1, -0=2, -1=2, -2=0,
+(x\cdot y)\cdot z = x\cdot(y\cdot z), 
+x\cdot y = y\cdot x, 
+x\cdot x=x], 3)$
+
+$|A|?$
+
+$Grape = A_1?$
+
+$B = \Mod(\m{Pos}+\s{cdot}+
+[0\le 1, 0\nleq 2, 2\nleq 0, 1\nleq 2, 2\nleq 1, -0=1, -1=0, -2=2,
+(x\cdot y)\cdot z = x\cdot(y\cdot z), 
+x\cdot x=x, 0\cdot 2=2], 3)$
+
+$Gondor = B_0?$
+
+$C = \Mod(\m{Pos}+\s{cdot}+
+[0\le 1, 0\nleq 2, 2\nleq 0, 1\nleq 2, 2\nleq 1, -0=1, -1=0, -2=2,
+(x\cdot y)\cdot z = x\cdot(y\cdot z), 
+x\cdot y = y\cdot x, 
+x\cdot x=x], 3)$
+
+$Joburg = C_0?$
+
+$D = \Mod(\m{Pos}+\s{cdot}+
+[0\le 1, 0\nleq 2, 2\nleq 0, 1\nleq 2, 2\nleq 1, -0=1, -1=0, -2=2,
+0\cdot 0=2,1\cdot 0=2,2\cdot 0=2,0\cdot 1=2,1\cdot 1=2,2\cdot 1=2,1\cdot 1=2, 2\cdot 2=1], 3)$
+
+$Saturn = D_1?$
+
+$E = \Mod(\m{Pos}+
+[0\le 1, 0\nleq 2, 2\nleq 0, 1\nleq 2, 2\nleq 1, -0=1, -1=0, -2=2,
+0\cdot 0=1,1\cdot 0=0,2\cdot 0=2,0\cdot 1=0,1\cdot 1=0,2\cdot 1=2,0\cdot 2=2, 1\cdot 2=2], 3)$
+
+$CIMPA = E_2?$
+
+%$\Pre([Grape,Gondor,Joburg,Saturn,CIMPA])?$
+
+$show(\Pre(Grape))$
+
+$show(\Pre(Gondor))$
+
+$show(\Pre(Joburg))$
+
+$show(\Pre(Saturn))$
+
+$show(\Pre(CIMPA))$
+""")
+```
+
+```
+#lp.P9=False
 lp.lapy(r"""
 Arithmetic expressions are written in calculator style, e.g., $1+2*4/4^2 ?$. 
 The '?' indicates that the answer should be inserted in the typeset output.
