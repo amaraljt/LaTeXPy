@@ -3,30 +3,6 @@
 # by Peter Jipsen, version 2023-1-6, distributed under LGPL 3 or later.
 # Terms are read using Vaughn Pratt's top-down parsing algorithm.
 
-# List of symbols handled by the parser (at this point)
-# =====================================================
-# \And \approx \backslash \bb \bigcap \bigcup \bot \cap \cc \cdot  
-# \circ \Con \cup \equiv \exists \forall \ge \implies \in \le \ln \m 
-# \mathbb \mathbf \mathcal \mid \Mod \models \ne \neg \ngeq \nleq \Not 
-# \nvdash \oplus \Or \Pre \setminus \sim \subset \subseteq \supset \supseteq 
-# \times \to \top \vdash \vee \vert \wedge + * / ^ _ ! = < > ( ) [ ] \{ \} | | $
-
-# The macros below are used to simplify the input tokens that need to be typed.
-macros=r"""
-\renewcommand{\And}{\ \text{and}\ }
-\newcommand{\Or}{\ \text{or}\ }
-\newcommand{\Not}{\text{not}\ }
-\newcommand{\Mod}{\text{Mod}}
-\newcommand{\Con}{\text{Con}}
-\newcommand{\Pre}{\text{Pre}}
-\newcommand{\m}{\mathbf}
-\newcommand{\bb}{\mathbb}
-\newcommand{\cc}{\mathcal}
-\newcommand{\s}{\text}
-\newcommand{\bsl}{\backslash}
-\newcommand{\sm}{{\sim}}
-"""
-
 import math, itertools, re, sys, subprocess
 subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'provers'])
 from provers import *
@@ -181,6 +157,30 @@ def postfix(id, bp):
 
 symbol_table = {}
 P9 = False
+
+# List of symbols handled by the parser (at this point)
+# =====================================================
+# \And \approx \backslash \bb \bigcap \bigcup \bot \cap \cc \cdot  
+# \circ \Con \cup \equiv \exists \forall \ge \implies \in \le \ln \m 
+# \mathbb \mathbf \mathcal \mid \Mod \models \ne \neg \ngeq \nleq \Not 
+# \nvdash \oplus \Or \Pre \setminus \sim \subset \subseteq \supset \supseteq 
+# \times \to \top \vdash \vee \vert \wedge + * / ^ _ ! = < > ( ) [ ] \{ \} | | $
+
+# The macros below are used to simplify the input tokens that need to be typed.
+macros=r"""
+\renewcommand{\And}{\ \text{and}\ }
+\newcommand{\Or}{\ \text{or}\ }
+\newcommand{\Not}{\text{not}\ }
+\newcommand{\Mod}{\text{Mod}}
+\newcommand{\Con}{\text{Con}}
+\newcommand{\Pre}{\text{Pre}}
+\newcommand{\m}{\mathbf}
+\newcommand{\bb}{\mathbb}
+\newcommand{\cc}{\mathcal}
+\newcommand{\s}{\text}
+\newcommand{\bsl}{\backslash}
+\newcommand{\sm}{{\sim}}
+"""
 
 def init_symbol_table():    #need to implement \tuple
     global symbol_table
