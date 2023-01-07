@@ -35,7 +35,7 @@ import sys; sys.path.append('/content/LaTeXPy'); import LaTeXPy as lp
 ```
 Here are some examples
 ```
-la.lapy(r"""
+lp.lapy(r"""
 $\m{Pos}=[
   x\le x, \newline
   x\le y \And y\le x\implies x=y,\newline
