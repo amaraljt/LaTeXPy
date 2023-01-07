@@ -10,30 +10,22 @@ Python and the resulting value (if any) is inserted into the LaTeX file. If the 
 is an assignment, the value of the right hand side is assigned to a Python variable with
 a similar name and can be used in subsequent LaTeX expressions.
 
-The following design principles are part of this project:
+It is recommended to use this code in a Colab Jupyter notebook freely available at 
+https://colab.research.google.com (use a free gmail account to login to Colab).
 
-1. The LaTeX input is written in a standard way close to what most users would expect, without the use of macros.
-2. Input and output can be copy-pasted from and to standard LaTeX documents.
-3. LaTeXPy is intended to be used in a Jupyter notebook environment. It makes use of the display module (for LaTeX and Markdown) and the graphviz module (for graphs and Hasse diagrams).
-4. The parser does not require a parser generator. Local modifications and extensions should be fairly easy to make for someone familiar with Python.
-5. The LaTeX interface connects with automated theorem provers and model finders (currently Prover9/Mace4). Future syntax extensions may include other provers, SMT-solvers and mathematical Python modules like SymPy and NumPy.
+**Step 1:** Click on the link above, and start a new Colab notebook (use **File->New notebook** on the webpage menu, **not** on your computer menu).
 
-The current version of LaTeXPy.py is experimental and intended to get feedback on design decisions.
-The input language covers an interesting fragment of discrete mathematics (including finite sets 
-and first-order logic), but the syntax is still evolving and incorrect input currently does not 
-produce useful error messages.
-
-Below are some examples of what is covered (they can be copy-pasted as input). A question mark after an expression is a request to evaluate the expression and insert the result in the typeset output (colored blue). Expressions with a top-level equal sign and a variable on the left are interpreted as assignments that get executed by Python. Input that was parsed and evaluated without error appears in green, and all other expressions (without ? or = or that generated errors) as well as text outside of $...$ math regions appear in black.
-
-The main function of the code is called lapy(...) and takes a r"""raw string""" as input, with some options for diagnostic output and pure LaTeX output with or without color coding.
-
-The following lines install LaTeXPy in a https://colab.research.google.com Jupyter notebook cell (copy-paste them). You need a gmail account to use this free Colab(orative) Jupyter notebook. (LaTeXPy should work in any Jupyter notebook, but the file LaTeXPy may need to be copied manually and modified slightly. Using it via Colab ensures you have the latest version, but does require an internet connection.)
+**Step 2:** Copy the following lines into the first notebook cell and click the red start button to install LaTeXPy. This takes about 30 seconds since it installs the Prover9 theorem prover on the Google server (nothing is installed on your computer).
 ```
 !rm -rf LaTeXPy #remove any previous version
 !git clone https://github.com/jipsen/LaTeXPy.git
 import sys; sys.path.append('/content/LaTeXPy'); import LaTeXPy as lp
 ```
-Here are some examples
+**Step 3:** Copy some of the examples below to see how to do various calculations using the LaTeX syntax that is valid with this script.
+
+The main function of the code is called `lp.lapy(...)` and takes a **r"""raw string"""** as input. (If something doesn't work it may help to add a second input in the form `lp.lapy(rawstring, 1)` then some diagnostic output is printed as well.)
+
+Here is a (longer) examples about small po-algebras that were chosen during a LIACT summer research school at the University of Johannesburg (Jan 3-13, 2023). Shorter examples are further below.
 ```
 lp.lapy(r"""
 $\m{Pos}=[
@@ -94,8 +86,23 @@ $show(\Pre(CIMPA))$
 """)
 ```
 
+The following design principles are part of this project:
+
+1. The LaTeX input is written in a standard way close to what most users would expect, without the use of macros.
+2. Input and output can be copy-pasted from and to standard LaTeX documents.
+3. LaTeXPy is intended to be used in a Jupyter notebook environment. It makes use of the display module (for LaTeX and Markdown) and the graphviz module (for graphs and Hasse diagrams).
+4. The parser does not require a parser generator. Local modifications and extensions should be fairly easy to make for someone familiar with Python.
+5. The LaTeX interface connects with automated theorem provers and model finders (currently Prover9/Mace4). Future syntax extensions may include other provers, SMT-solvers and mathematical Python modules like SymPy and NumPy.
+
+The current version of LaTeXPy.py is experimental and intended to get feedback on design decisions.
+The input language covers an interesting fragment of discrete mathematics (including finite sets 
+and first-order logic), but the syntax is still evolving and incorrect input currently does not 
+produce useful error messages.
+
+Below is another example of what is covered (can be copy-pasted as input). A question mark after an expression is a request to evaluate the expression and insert the result in the typeset output (colored blue). Expressions with a top-level equal sign and a variable on the left are interpreted as assignments that get executed by Python. Input that was parsed and evaluated without error appears in green, and all other expressions (without ? or = or that generated errors) as well as text outside of $...$ math regions appear in black.
+
 ```
-#lp.P9=False
+#lp.P9=False This example shows how some of the finite set operations work.
 lp.lapy(r"""
 Arithmetic expressions are written in calculator style, e.g., $1+2*4/4^2 ?$. 
 The '?' indicates that the answer should be inserted in the typeset output.
