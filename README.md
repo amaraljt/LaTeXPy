@@ -145,14 +145,13 @@ The last element is $u_{-1}?$, and if $i=1$ then $u_i?$.
 
 ```
 l.l(r"""
-Set comprehension has two forms: $A=\{1,...,100\}$, 
+Set comprehension has two forms: $A=\{1,\dots,100\}$, 
 
 $\{x\in A\mid p(x)\}$ and $\{f(x)\mid x\in A\And p(x)\}$. In the second case the property $p(x)$ can also be omitted.
 
 Use set comprehension to list the prime numbers under 100:
 
-$\{x\in A\mid x\ne 1\And\forall {y\in A, y\vert x\implies y=1 or y=x}\}$
-""")
-```
+$\{x\in A\mid x\ne 1\And\forall {y\in A, y\vert x\implies y=1\Or y=x}\}?$
+""")```
 
 
