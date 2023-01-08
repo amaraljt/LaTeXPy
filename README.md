@@ -23,7 +23,7 @@ import sys; sys.path.append('/content/LaTeXPy'); import LaTeXPy as l
 ```
 **Step 3:** Copy some of the examples below to see how to do various calculations using the LaTeX syntax that is valid with this script.
 
-The main function of the code is called `lp.lapy(...)` and takes a **r"""raw string"""** as input. (If something doesn't work it may help to add a second input in the form `lp.lapy(rawstring, 1)` then some diagnostic output is printed as well.)
+The main function of the code is called `l.m(...)` and takes a **r"""raw string"""** as input. (If something doesn't work it may help to add a second input in the form `l.m(rawstring, 1)` then some diagnostic output is printed as well.)
 
 Here is a (longer) example about small po-algebras that were chosen during a LIACT summer research school at the University of Johannesburg (Jan 3-13, 2023). Shorter examples are further below.
 ```
@@ -72,7 +72,18 @@ E = \Mod(\m{Pos}+
 
 CIMPA = E_2?
 
-show(\Pre([Grape,Gondar,Joburg,Saturn,CIMPA]))
+show(\Pre([Grape,Gondar,Joburg,Saturn,CIMPA])) %show the precongruence lattices for these 3 algebras.
+
+\Pre(Grape)? %not s.i., so should look for the s.i. factors
+
+\Pre(Gondar)? %each of these 3 have a monolith consisting of the congruence |01|2|
+
+\Pre(Joburg)?
+
+\Pre(Saturn)?
+
+% the CIMPA algebra is simple. What subvarieties does it have? 
+% Does it generate a precongruence distributive vareity?
 """)
 ```
 
@@ -93,23 +104,47 @@ Below are other example of what is covered (can be copy-pasted as input). A ques
 
 ```
 l.l(r"""
+Here we are using the l.l(...) command which requires $...$ to surround the math parts and it also assumes that
+the parser should translate to Python (rather than to Prover9) syntax.
+
 Arithmetic expressions are written in calculator style, e.g., $1+2\cdot 4/4^2 ?$. 
 The '?' indicates that the answer should be inserted in the typeset output.
+```
 
+```
+l.l(r"""
 Sets are finite and can contain numbers, unevaluated expressions and 
 other (finite) sets e.g., $A=\{2,a,b,\gamma,\delta\}?$.
 
 Standard set-operations are available: $A\cap \{1,2,3,b\}?$, $A\cup \{1,2,3,b\}?$, 
 $A\setminus \{1,2,3,b\}?$, $A\oplus \{1,2,3,b\}?$.
+```
 
+```
+l.l(r"""
 Ranges $\{3,\dots,10\}?$, cartesian product $\{1,2,3\}\times\{a,b\}?$.
 
-Powerset $P=\mathcal{P}(\{1,2\})?$, cardinality $|P|?$.
+Powerset $P=\mathcal{P}(\{1,2,3,4\})?$ 
+
+Cardinality $|P|?$
 
 A lattice of subsets can be displayed using $show(P)$ (it is shown before the rest of the output).
+```
 
+```
+l.l(r"""
 Lists use [...] syntax: $L=[a,b,c]$ and subscripts access elements. 
 The first element is $L_0?$, and if $i=2$ then $L_i?$.
+
+Tuples use \tup{...} syntax: $v=\tup{a,b,c}?$ and again subscripts are used to access elements. 
+The last element is $v_{-1}?$, and if $i=1$ then $v_i?$.
+```
+
+```
+l.l(r"""
+Set comprehension has two forms: $A=\{1,...,100\}$, 
+
+$\{x\in A\mid p(x)\}$ and $\{f(x)\mid x\in A\And p(x)\}$. In the second case $p(x)$ can also be omitted.
 """)
 ```
 
