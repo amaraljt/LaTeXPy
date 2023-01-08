@@ -72,7 +72,7 @@ E = \Mod(\m{Pos}+
 
 CIMPA = E_2?
 
-\Pre([Grape,Gondar,Joburg,Saturn,CIMPA])?
+show(\Pre([Grape,Gondar,Joburg,Saturn,CIMPA]))
 """)
 ```
 
