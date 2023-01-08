@@ -19,76 +19,66 @@ https://colab.research.google.com (use a free gmail account to login to Colab).
 ```
 !rm -rf LaTeXPy #remove any previous version
 !git clone https://github.com/jipsen/LaTeXPy.git
-import sys; sys.path.append('/content/LaTeXPy'); import LaTeXPy as lp
+import sys; sys.path.append('/content/LaTeXPy'); import LaTeXPy as l
 ```
 **Step 3:** Copy some of the examples below to see how to do various calculations using the LaTeX syntax that is valid with this script.
 
 The main function of the code is called `lp.lapy(...)` and takes a **r"""raw string"""** as input. (If something doesn't work it may help to add a second input in the form `lp.lapy(rawstring, 1)` then some diagnostic output is printed as well.)
 
-Here is a (longer) examples about small po-algebras that were chosen during a LIACT summer research school at the University of Johannesburg (Jan 3-13, 2023). Shorter examples are further below.
+Here is a (longer) example about small po-algebras that were chosen during a LIACT summer research school at the University of Johannesburg (Jan 3-13, 2023). Shorter examples are further below.
 ```
-lp.lapy(r"""
-$\m{Pos}=[
+l.l(r"""
+\m{Pos}=[
   x\le x, \newline
   x\le y \And y\le x\implies x=y,\newline
-  x\le y \And y\le z\implies x\le z]$ partially ordered sets
+  x\le y \And y\le z\implies x\le z]
 
-$\s{cdot} = [x\le y\implies x\cdot z\le y\cdot z, x\le y\implies z\cdot x\le z\cdot y]$
+\s{cdot} = [x\le y\implies x\cdot z\le y\cdot z, x\le y\implies z\cdot x\le z\cdot y]
 
-$A = \Mod(\m{Pos}+\s{cdot}+
+A = \Mod(\m{Pos}+\s{cdot}+
 [0\le 1, 0\nleq 2, 2\nleq 0, 1\nleq 2, 2\nleq 1, -0=2, -1=2, -2=0,
 (x\cdot y)\cdot z = x\cdot(y\cdot z), 
 x\cdot y = y\cdot x, 
-x\cdot x=x], 3)$
+x\cdot x=x], 3)
 
-$|A|?$
+|A|?
 
-$Grape = A_1?$
+Grape = A_1?
 
-$B = \Mod(\m{Pos}+\s{cdot}+
+B = \Mod(\m{Pos}+\s{cdot}+
 [0\le 1, 0\nleq 2, 2\nleq 0, 1\nleq 2, 2\nleq 1, -0=1, -1=0, -2=2,
 (x\cdot y)\cdot z = x\cdot(y\cdot z), 
-x\cdot x=x, 0\cdot 2=2], 3)$
+x\cdot x=x, 0\cdot 2=2], 3)
 
-$Gondor = B_0?$
+Gondar = B_0?
 
-$C = \Mod(\m{Pos}+\s{cdot}+
+C = \Mod(\m{Pos}+\s{cdot}+
 [0\le 1, 0\nleq 2, 2\nleq 0, 1\nleq 2, 2\nleq 1, -0=1, -1=0, -2=2,
 (x\cdot y)\cdot z = x\cdot(y\cdot z), 
 x\cdot y = y\cdot x, 
-x\cdot x=x], 3)$
+x\cdot x=x], 3)
 
-$Joburg = C_0?$
+Joburg = C_0?
 
-$D = \Mod(\m{Pos}+\s{cdot}+
+D = \Mod(\m{Pos}+\s{cdot}+
 [0\le 1, 0\nleq 2, 2\nleq 0, 1\nleq 2, 2\nleq 1, -0=1, -1=0, -2=2,
-0\cdot 0=2,1\cdot 0=2,2\cdot 0=2,0\cdot 1=2,1\cdot 1=2,2\cdot 1=2,1\cdot 1=2, 2\cdot 2=1], 3)$
+0\cdot 0=2,1\cdot 0=2,2\cdot 0=2,0\cdot 1=2,1\cdot 1=2,2\cdot 1=2,1\cdot 1=2, 2\cdot 2=1], 3)
 
-$Saturn = D_1?$
+Saturn = D_1?
 
-$E = \Mod(\m{Pos}+
+E = \Mod(\m{Pos}+
 [0\le 1, 0\nleq 2, 2\nleq 0, 1\nleq 2, 2\nleq 1, -0=1, -1=0, -2=2,
-0\cdot 0=1,1\cdot 0=0,2\cdot 0=2,0\cdot 1=0,1\cdot 1=0,2\cdot 1=2,0\cdot 2=2, 1\cdot 2=2], 3)$
+0\cdot 0=1,1\cdot 0=0,2\cdot 0=2,0\cdot 1=0,1\cdot 1=0,2\cdot 1=2,0\cdot 2=2, 1\cdot 2=2], 3)
 
-$CIMPA = E_2?$
+CIMPA = E_2?
 
-%$\Pre([Grape,Gondor,Joburg,Saturn,CIMPA])?$
-
-$show(\Pre(Grape))$
-
-$show(\Pre(Gondor))$
-
-$show(\Pre(Joburg))$
-
-$show(\Pre(Saturn))$
-
-$show(\Pre(CIMPA))$
+\Pre([Grape,Gondar,Joburg,Saturn,CIMPA])?
 """)
 ```
 
 The following design principles are part of this project:
 
-1. The LaTeX input is written in a standard way close to what most users would expect, without the use of macros.
+1. The LaTeX input is written using standard mathematical/logical notation.
 2. Input and output can be copy-pasted from and to standard LaTeX documents.
 3. LaTeXPy is intended to be used in a Jupyter notebook environment. It makes use of the display module (for LaTeX and Markdown) and the graphviz module (for graphs and Hasse diagrams).
 4. The parser does not require a parser generator. Local modifications and extensions should be fairly easy to make for someone familiar with Python.
@@ -102,8 +92,7 @@ produce useful error messages.
 Below is another example of what is covered (can be copy-pasted as input). A question mark after an expression is a request to evaluate the expression and insert the result in the typeset output (colored blue). Expressions with a top-level equal sign and a variable on the left are interpreted as assignments that get executed by Python. Input that was parsed and evaluated without error appears in green, and all other expressions (without ? or = or that generated errors) as well as text outside of $...$ math regions appear in black.
 
 ```
-#lp.P9=False This example shows how some of the finite set operations work.
-lp.lapy(r"""
+l.l(r"""
 Arithmetic expressions are written in calculator style, e.g., $1+2*4/4^2 ?$. 
 The '?' indicates that the answer should be inserted in the typeset output.
 
