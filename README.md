@@ -136,8 +136,10 @@ l.l(r"""
 Lists use [...] syntax: $L=[a,b,c]$ and subscripts access elements. 
 The first element is $L_0?$, and if $i=2$ then $L_i?$.
 
-Tuples use \tup{...} syntax: $v=\tup{a,b,c}?$ and again subscripts are used to access elements. 
-The last element is $v_{-1}?$, and if $i=1$ then $v_i?$.
+Tuples use \tup{...} syntax: $u=\tup{a,b,c}?$ and again subscripts are used to access elements. 
+The last element is $u_{-1}?$, and if $i=1$ then $u_i?$.
+
+(Note: using v as a variable is a bug since it is interpreted as join (in Prover9). This needs to be fixed)
 """)
 ```
 
@@ -146,6 +148,10 @@ l.l(r"""
 Set comprehension has two forms: $A=\{1,...,100\}$, 
 
 $\{x\in A\mid p(x)\}$ and $\{f(x)\mid x\in A\And p(x)\}$. In the second case the property $p(x)$ can also be omitted.
+
+Use set comprehension to list the prime numbers under 100:
+
+$\{x\in A\mid x\ne 1\And\forall {y\in A, y\vert x\implies y=1 or y=x}\}$
 """)
 ```
 
