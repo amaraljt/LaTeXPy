@@ -138,13 +138,14 @@ The first element is $L_0?$, and if $i=2$ then $L_i?$.
 
 Tuples use \tup{...} syntax: $v=\tup{a,b,c}?$ and again subscripts are used to access elements. 
 The last element is $v_{-1}?$, and if $i=1$ then $v_i?$.
+""")
 ```
 
 ```
 l.l(r"""
 Set comprehension has two forms: $A=\{1,...,100\}$, 
 
-$\{x\in A\mid p(x)\}$ and $\{f(x)\mid x\in A\And p(x)\}$. In the second case $p(x)$ can also be omitted.
+$\{x\in A\mid p(x)\}$ and $\{f(x)\mid x\in A\And p(x)\}$. In the second case the property $p(x)$ can also be omitted.
 """)
 ```
 
