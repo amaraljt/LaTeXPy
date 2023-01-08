@@ -89,11 +89,11 @@ The input language covers an interesting fragment of discrete mathematics (inclu
 and first-order logic), but the syntax is still evolving and incorrect input currently does not 
 produce useful error messages.
 
-Below is another example of what is covered (can be copy-pasted as input). A question mark after an expression is a request to evaluate the expression and insert the result in the typeset output (colored blue). Expressions with a top-level equal sign and a variable on the left are interpreted as assignments that get executed by Python. Input that was parsed and evaluated without error appears in green, and all other expressions (without ? or = or that generated errors) as well as text outside of $...$ math regions appear in black.
+Below are other example of what is covered (can be copy-pasted as input). A question mark after an expression is a request to evaluate the expression and insert the result in the typeset output (colored blue). Expressions with a top-level equal sign and a variable on the left are interpreted as assignments that get executed by Python. Input that was parsed and evaluated without error appears in green, and all other expressions (without ? or = or that generated errors) as well as text outside of $...$ math regions appear in black.
 
 ```
 l.l(r"""
-Arithmetic expressions are written in calculator style, e.g., $1+2*4/4^2 ?$. 
+Arithmetic expressions are written in calculator style, e.g., $1+2\cdot 4/4^2 ?$. 
 The '?' indicates that the answer should be inserted in the typeset output.
 
 Sets are finite and can contain numbers, unevaluated expressions and 
