@@ -625,6 +625,7 @@ def process(st, info=False, nocolor=False):
 
 def l(st, info=False, output=False, nocolor=False):
   # Main function to translate valid LaTeX/Markdown string st
+  global P9
   P9 = False # parse LaTeX math input between $-signs and output Python syntax
   st = re.sub("%.*?\n","\n",st) #remove LaTeX comments
   (j,k,d) = nextmath(st,0)
@@ -639,6 +640,7 @@ def l(st, info=False, output=False, nocolor=False):
 
 def m(st, info=False, output=False, nocolor=False): 
   # math input; $-signs are not needed, but commands should be separated by empty lines
+  global P9
   P9 = True # parse and output Prover9 syntax (rather than Python syntax)
   st = re.sub("%.*?\n","\n",st) #remove LaTeX comments
   li = st.split("\n\n")
