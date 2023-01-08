@@ -27,7 +27,7 @@ The main function of the code is called `lp.lapy(...)` and takes a **r"""raw str
 
 Here is a (longer) example about small po-algebras that were chosen during a LIACT summer research school at the University of Johannesburg (Jan 3-13, 2023). Shorter examples are further below.
 ```
-l.l(r"""
+l.m(r"""
 \m{Pos}=[
   x\le x, \newline
   x\le y \And y\le x\implies x=y,\newline
