@@ -40,20 +40,20 @@ def is_postfix(t):
     return hasattr(t,'leftd') and len(t.a)==1
 
 def w(t,i): # decide when to add parentheses during printing of terms
-    subt = t.a[i] if len(t.a)>i else t
+    subt = t.a[i] if len(t.a)>i else "index out of range"
     return str(subt) if subt.lbp < t.lbp or subt.a==[] or \
         (subt.sy==t.sy and subt.lbp==t.lbp) or \
         (not hasattr(subt,'leftd') or not hasattr(t,'leftd')) or \
         (is_postfix(subt) and is_postfix(t)) else "("+str(subt)+")"
 
 def w2(t,i):
-  subt = t.a[i] if len(t.a)>i else t
+  subt = t.a[i] if len(t.a)>i else "index out of range"
   return str(subt) if subt.lbp < t.lbp or subt.a==[] \
         or (not hasattr(subt,'leftd') and subt.lbp==1200) \
         else "("+str(subt)+")"
 
 def w3(t,i): # always add parentheses
-  subt = t.a[i] if len(t.a)>i else t
+  subt = t.a[i] if len(t.a)>i else "index out of range"
   return "("+str(subt)+")"
 
 def letter(c): return 'a'<=c<='z' or 'A'<=c<='Z'
