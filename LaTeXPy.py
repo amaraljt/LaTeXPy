@@ -1,7 +1,35 @@
 # Python program to parse LaTeX formulas and evaluate Python/Prover9 expressions
 
-# by Peter Jipsen, version 2023-1-6, distributed under LGPL 3 or later.
+# by Peter Jipsen, version 2023-1-8, distributed under LGPL 3 or later.
 # Terms are read using Vaughn Pratt's top-down parsing algorithm.
+
+# List of symbols handled by the parser (at this point)
+# =====================================================
+# \And \approx \backslash \bb \bigcap \bigcup \bot \cap \cc \cdot  
+# \circ \Con \cup \equiv \exists \forall \ge \implies \in \le \ln \m 
+# \mathbb \mathbf \mathcal \mid \Mod \models \ne \neg \ngeq \nleq \Not 
+# \nvdash \oplus \Or \Pre \setminus \sim \subset \subseteq \supset \supseteq 
+# \times \to \top \vdash \vee \vert \wedge + * / ^ _ ! = < > ( ) [ ] \{ \} | | $
+
+# Greek letters and most other LaTeX symbols can be used as variable names.
+# A LaTeX symbol named \abc... is translated to the Python variable _abc...
+
+# The macros below are used to simplify the input tokens that need to be typed.
+macros=r"""
+\renewcommand{\And}{\ \text{and}\ }
+\newcommand{\Or}{\ \text{or}\ }
+\newcommand{\Not}{\text{not}\ }
+\newcommand{\m}{\mathbf}
+\newcommand{\bb}{\mathbb}
+\newcommand{\cc}{\mathcal}
+\newcommand{\s}{\text}
+\newcommand{\bsl}{\backslash}
+\newcommand{\sm}{{\sim}}
+\newcommand{\tup}[1]{(#1)}
+\newcommand{\Mod}{\text{Mod}}
+\newcommand{\Con}{\text{Con}}
+\newcommand{\Pre}{\text{Pre}}
+"""
 
 import math, itertools, re, sys, subprocess
 subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'provers'])
@@ -24,11 +52,9 @@ def w2(t,i):
         or (not hasattr(subt,'leftd') and subt.lbp==1200) \
         else "("+str(subt)+")"
 
-def w3(t,i): # 
+def w3(t,i): # always add parentheses
   subt = t.a[i] if len(t.a)>i else t
   return "("+str(subt)+")"
-    #str(subt) if subt.a==[] or not hasattr(subt,'leftd') or \
-    #subt.sy not in ['@', '&', '|', '=>', '<=', '<=>', '\\implies'] else "( "+str(subt)+" )"
 
 def letter(c): return 'a'<=c<='z' or 'A'<=c<='Z'
 def alpha_numeric(c): return 'a'<=c<='z' or 'A'<=c<='Z' or '0'<=c<='9'
@@ -102,7 +128,6 @@ def prefix(id, bp=0): # parse n-ary prefix operations
                         break
                     advance(",")
               advance(")")
-              #self.a[0].a = [expression()]
             return self
     s = symbol(id, bp)
     s.nulld = nulld
@@ -158,30 +183,6 @@ def postfix(id, bp):
 symbol_table = {}
 P9 = False
 
-# List of symbols handled by the parser (at this point)
-# =====================================================
-# \And \approx \backslash \bb \bigcap \bigcup \bot \cap \cc \cdot  
-# \circ \Con \cup \equiv \exists \forall \ge \implies \in \le \ln \m 
-# \mathbb \mathbf \mathcal \mid \Mod \models \ne \neg \ngeq \nleq \Not 
-# \nvdash \oplus \Or \Pre \setminus \sim \subset \subseteq \supset \supseteq 
-# \times \to \top \vdash \vee \vert \wedge + * / ^ _ ! = < > ( ) [ ] \{ \} | | $
-
-# The macros below are used to simplify the input tokens that need to be typed.
-macros=r"""
-\renewcommand{\And}{\ \text{and}\ }
-\newcommand{\Or}{\ \text{or}\ }
-\newcommand{\Not}{\text{not}\ }
-\newcommand{\Mod}{\text{Mod}}
-\newcommand{\Con}{\text{Con}}
-\newcommand{\Pre}{\text{Pre}}
-\newcommand{\m}{\mathbf}
-\newcommand{\bb}{\mathbb}
-\newcommand{\cc}{\mathcal}
-\newcommand{\s}{\text}
-\newcommand{\bsl}{\backslash}
-\newcommand{\sm}{{\sim}}
-"""
-
 def init_symbol_table():    #need to implement \tuple
     global symbol_table
     symbol_table = {}
@@ -191,8 +192,15 @@ def init_symbol_table():    #need to implement \tuple
     symbol("}")
     prefix("|").__repr__ = lambda x: "len("+str(x.a[0])+")" #interferes with p|q from Prover9
     plist("[").__repr__ = lambda x: "["+",".join([strorval(y) for y in x.a])+"]"
+    plist("\\tup{").__repr__ = lambda x: "("+",".join([strorval(y) for y in x.a])+")"
     plist("\\{").__repr__ = lambda x: "frozenset(["+x.a[0].a[0].a[0].sy+" for "+str(x.a[0].a[0])+\
-      " if "+str(x.a[0].a[1]).replace(" = "," == ")+"])" if len(x.a)==1 and x.a[0].sy=="\\mid"\
+      " if "+str(x.a[0].a[1]).replace(" = "," == ")+"])"\
+      if len(x.a)==1 and x.a[0].sy=="\\mid" and x.a[0].a[0].sy=="\\in"\
+      else "frozenset(["+str(x.a[0].a[0])+" for "+str(x.a[0].a[1].a[0])+\
+      " if "+str(x.a[0].a[1].a[1]).replace(" = "," == ")+"])"\
+      if len(x.a)==1 and x.a[0].sy=="\\mid" and x.a[0].a[1].sy=="\\And" and x.a[0].a[1].a[0].sy=="\\in"\
+      else "frozenset(["+str(x.a[0].a[0])+" for "+str(x.a[0].a[1])+"])"\
+      if len(x.a)==1 and x.a[0].sy=="\\mid" and x.a[0].a[1].sy=="\\in"\
       else "frozenset(["+",".join([strorval(y) for y in x.a])+"])"\
       if len(x.a)<2 or x.a[1].sy!='\\dots' else "frozenset(range("+str(x.a[0])+","+str(x.a[2])+"+1))"
     symbol("]")
@@ -236,10 +244,10 @@ def init_symbol_table():    #need to implement \tuple
     prefix("\\bigcup",350).__repr__ = lambda x: "union("+str(x.a[0])+")"    # union of a set of sets
     prefix("\\mathcal{P}",350).__repr__=lambda x: "powerset("+str(x.a[0])+")" #powerset of a set
     prefix("\\cc{P}",350).__repr__=   lambda x: "powerset("+str(x.a[0])+")" # powerset of a set
-    prefix("\\mathbf",350).__repr__ = lambda x: "mbf"+str(x.a[0].sy)        # algebra or structure or theory
-    prefix("\\m",350).__repr__ =      lambda x: "mbf"+str(x.a[0].sy)        # algebra or structure or theory
-    prefix("\\mathbb",350).__repr__ = lambda x: "mbb"+str(x.a[0].sy)        # blackboard bold
-    prefix("\\bb",350).__repr__ =     lambda x: "mbb"+str(x.a[0].sy)        # blackboard bold
+    prefix("\\mathbf",350).__repr__ = lambda x: "_mathbf"+str(x.a[0].sy)    # algebra or structure or theory
+    prefix("\\m",350).__repr__ =      lambda x: "_m"+str(x.a[0].sy)         # algebra or structure or theory
+    prefix("\\mathbb",350).__repr__ = lambda x: "_mathbb"+str(x.a[0].sy)    # blackboard bold
+    prefix("\\bb",350).__repr__ =     lambda x: "_bb"+str(x.a[0].sy)        # blackboard bold
     prefix("\\Mod",350).__repr__=     lambda x: "[z for y in p9(pyp9("+str(x.a[0])+"),[],"+(str(x.a[2]) if len(x.a)>2\
       else "100")+",0,["+(str(x.a[1]) if len(x.a)>1 else "2")+"])[2:] for z in y]"
     prefix("\\Con",350).__repr__=     lambda x: "congruences("+str(x.a[0])+")" # set of congruences of an algebra
@@ -302,6 +310,7 @@ def tokenize(st):
             if tok=="\\s": j = st.find("}",j)+1 if st[j]=="{" else j
             if tok=="\\mathcal": j = st.find("}",j)+1 if st[j]=="{" else j
             if tok=="\\cc": j = st.find("}",j)+1 if st[j]=="{" else j
+            if tok=="\\tup": j += 1 if st[j]=="{" else j
             tok = st[i:j]
             symbol(tok)
             if j<len(st) and st[j]=='(': prefix(tok, 1200) #promote tok to function
@@ -447,6 +456,7 @@ def compatiblepreorders(A, precon=True, sym=False):
   "^":"C(x,y)->C(x^z,y^z)&C(z^x,z^y)",
   "v":"C(x,y)->C(x v z,y v z)&C(z v x,z v y)",
   }
+  if type(A)==str: A=eval(A)
   m=A.cardinality
   compat = ["C(x,y)&C(y,z)->C(x,z)"]+(["x<=y->C(x,y)"] if precon else ["C(x,x)"])
   for o in A.operations.keys():
@@ -613,7 +623,9 @@ def process(st, info=False, nocolor=False):
   except:
     return ("" if nocolor else "\color{green}")+macros+st
 
-def lapy(st, info=False, output=False, nocolor=False):
+def l(st, info=False, output=False, nocolor=False):
+  # Main function to translate valid LaTeX/Markdown string st
+  P9 = False # parse LaTeX math input between $-signs and output Python syntax
   st = re.sub("%.*?\n","\n",st) #remove LaTeX comments
   (j,k,d) = nextmath(st,0)
   out = st[0:j]
@@ -625,21 +637,13 @@ def lapy(st, info=False, output=False, nocolor=False):
   display(Markdown(out))
   if output: print(out)
 
-def test(st, info=True):
-  display(Math(st))
-  t=parse(st)
-  if info:
-    print(ast(t))
-    print(t)
-  try:
-    val=eval(str(t))
-    if info: print(val)
-    display(Math(pyla(val)));print()
-  except:
-    try:
-      exec(str(t),globals())
-    except:
-      if info: print("no result")
-    print()
+def m(st, info=False, output=False, nocolor=False): 
+  # math input; $-signs are not needed, but commands should be separated by empty lines
+  P9 = True # parse and output Prover9 syntax (rather than Python syntax)
+  st = re.sub("%.*?\n","\n",st) #remove LaTeX comments
+  li = st.split("\n\n")
+  out = "$"+"$\n\n$".join(process(x.strip(),info,nocolor) for x in li)+"$"
+  display(Markdown(out))
+  if output: print(out)
 
 P9=True # switch the parser into Prover9 mode
