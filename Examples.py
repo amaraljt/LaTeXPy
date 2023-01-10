@@ -100,11 +100,11 @@ $\s{Mo} = [x\wedge(y\vee (x\wedge z))=x\wedge y\vee x \wedge z]$ modular
 
 $\s{Dwvl} = [x\wedge(y\vee z)=(x\wedge y)\vee (x\wedge z)]$ distributivity of wedge over vee left
 
-$\s{Dvwl} = [x\vee(y\wedge z)=(x\vee y)\wedge x\vee z]$ distributivity of vee over wedge left
+$\s{Dvwl} = [x\vee(y\wedge z)=(x\vee y)\wedge (x\vee z)]$ distributivity of vee over wedge left
 
 $\s{Dwvr} = [(x\vee y)\wedge z=(x\wedge z)\vee (y\wedge z)]$ distributivity of wedge over vee right
 
-$\s{Dvwr} = [(x\wedge y)\vee z=(x\vee z)\wedge y\vee z]$ distributivity of vee over wedge right
+$\s{Dvwr} = [(x\wedge y)\vee z=(x\vee z)\wedge (y\vee z)]$ distributivity of vee over wedge right
 
 $\s{Dm} = [(x\wedge y)'=x'\vee y', x''=x]$ De Morgan
 
