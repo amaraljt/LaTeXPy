@@ -370,21 +370,20 @@ def pyla(p,newl=False): # convert Python object to LaTeX string
       sp = p
     cntr=0; st="\\{"+", ".join(pyla(el,True) for el in sp)+"\\}" if len(p)>0 else "\\emptyset";cntr=0;return st
   if type(p)==list:  cntr=0; st="["+", ".join(pyla(el,True) for el in p)+"]";cntr=0; return st
-  if type(p)==tuple: cntr=0; st="("+", ".join(pyla(el,True) for el in p)+")";cntr=0; return st
-  if type(p)==bool:  return "\mathbf{"+str(p)+"}"
-  if type(p)==Model: return modelLa(p)
-  if type(p)==Proof: return proofLa(p)
-  if type(p)==str:
+  elif type(p)==tuple: cntr=0; st="("+", ".join(pyla(el,True) for el in p)+")";cntr=0; return st
+  elif type(p)==bool:  return "\mathbf{"+str(p)+"}"
+  elif type(p)==Model: return modelLa(p)
+  elif type(p)==Proof: return proofLa(p)
+  elif type(p)==str:
     if p=="N": return "\\text{No counterexample after 10 seconds}"
     try:
       st =  str(parse(p if p[0]!="_" else "\\"+p[1:]))
     except: pass
     if st[0]=="_": st = "\\"+st[1:]
-    if newl and len(st)>=20: return "\\newline\n"+st
-    #if newl and len(st)>=5: return " \\ "+st
-    return st
-  st =  str(p)
-  #if newl and len(st)>=20: return "\\newline\n"+st
+  else:
+    st =  str(p)
+  if newl and len(st)>=20: return "\\newline\n"+st
+  #if newl and len(st)>=5: return " \\ "+st
   return st
 
 # Translate from Prover9 symbols to LaTeX symbols
