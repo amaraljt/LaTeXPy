@@ -368,12 +368,12 @@ def pyla(p,newl=False): # convert Python object to LaTeX string
       sp = sorted(p)
     except:
       sp = p
-    cntr=0; st="\\{"+", ".join(pyla(el,True) for el in sp)+"\\}" if len(p)>0 else "\\emptyset";cntr=0;return st
-  if type(p)==list:  cntr=0; st="["+", ".join(pyla(el,True) for el in p)+"]";cntr=0; return st
-  elif type(p)==tuple: cntr=0; st="("+", ".join(pyla(el,True) for el in p)+")";cntr=0; return st
-  elif type(p)==bool:  return "\mathbf{"+str(p)+"}"
-  elif type(p)==Model: return modelLa(p)
-  elif type(p)==Proof: return proofLa(p)
+    cntr=0; st="\\{"+", ".join(pyla(el,True) for el in sp)+"\\}" if len(p)>0 else "\\emptyset";cntr=0
+  elif type(p)==list:  cntr=0; st="["+", ".join(pyla(el,True) for el in p)+"]";cntr=0
+  elif type(p)==tuple: cntr=0; st="("+", ".join(pyla(el,True) for el in p)+")";cntr=0
+  elif type(p)==bool:  st = "\mathbf{"+str(p)+"}"
+  elif type(p)==Model: st = modelLa(p)
+  elif type(p)==Proof: st = proofLa(p)
   elif type(p)==str:
     if p=="N": return "\\text{No counterexample after 10 seconds}"
     try:
