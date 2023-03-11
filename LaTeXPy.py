@@ -32,8 +32,8 @@ macros=r"""
 """
 
 import math, itertools, re, sys, subprocess
-subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'provers'])
-from provers import *
+# subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'provers'])
+# from provers import *
 from IPython.display import *
 
 def is_postfix(t):
