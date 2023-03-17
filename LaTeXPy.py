@@ -17,18 +17,18 @@
 # The macros below are used to simplify the input tokens that need to be typed.
 macros=r"""
 \renewcommand{\And}{\ \text{and}\ }
-\newcommand{\Or}{\ \text{or}\ }
-\newcommand{\Not}{\text{not}\ }
-\newcommand{\m}{\mathbf}
-\newcommand{\bb}{\mathbb}
-\newcommand{\cc}{\mathcal}
-\newcommand{\s}{\text}
-\newcommand{\bsl}{\backslash}
-\newcommand{\sm}{{\sim}}
-\newcommand{\tup}[1]{(#1)}
-\newcommand{\Mod}{\text{Mod}}
-\newcommand{\Con}{\text{Con}}
-\newcommand{\Pre}{\text{Pre}}
+\renewcommand{\Or}{\ \text{or}\ }
+\renewcommand{\Not}{\text{not}\ }
+\renewcommand{\m}{\mathbf}
+\renewcommand{\bb}{\mathbb}
+\renewcommand{\cc}{\mathcal}
+\renewcommand{\s}{\text}
+\renewcommand{\bsl}{\backslash}
+\renewcommand{\sm}{{\sim}}
+\renewcommand{\tup}[1]{(#1)}
+\renewcommand{\Mod}{\text{Mod}}
+\renewcommand{\Con}{\text{Con}}
+\renewcommand{\Pre}{\text{Pre}}
 """
 
 import math, itertools, re, sys, subprocess
