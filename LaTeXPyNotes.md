@@ -1,7 +1,16 @@
 
 Jared, Nathan, Alex, Jose
 
+Remove/modularize provers package
+
 use sympy
+
+
+
+
+
+
+
 
 check out latex2sympy2 
 
@@ -49,3 +58,6 @@ $2*3 = 6 = 6$
 
 $[2,3]\cdot[2,2] = [ 2, \  3] = [ 2, \  3]$
 
+$\pi = 3.14159265358979$
+
+$solve(2x=0)$
