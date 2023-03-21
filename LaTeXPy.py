@@ -57,7 +57,7 @@ def p9st(t):
   P9=True;ps=str(t);P9=False
   return ps
 
-def p9(assume_list, goal_list, mace_seconds=2, prover_seconds=60, cardinality=None, params='', info=False):
+def pr9(assume_list, goal_list, mace_seconds=2, prover_seconds=60, cardinality=None, params='', info=False):
     global prover9
     if type(cardinality) == int or cardinality == None:
         return prover9(assume_list, goal_list, mace_seconds, prover_seconds, cardinality, params=params, info=info, options=p9options)
@@ -332,13 +332,13 @@ def init_symbol_table():
     preorinfix("\\sim",310).__repr__= lambda x: "~"+w(x,0)\
       if len(x.a)==1 else str(x.a[0])+" ~ "+w(x,1) #left negative or equivalence relation
     prefix("\\sm",310).__repr__=      lambda x: "~"+w(x,0) #version of \sim with better spacing
-    prefix("\\Mod",350).__repr__=     lambda x: "[z for y in p9(pyp9("+p9st(x.a[0])+"),[],"+(p9st(x.a[2]) if len(x.a)>2\
+    prefix("\\Mod",350).__repr__=     lambda x: "[z for y in pr9(pyp9("+p9st(x.a[0])+"),[],"+(p9st(x.a[2]) if len(x.a)>2\
       else "100")+",0,["+(p9st(x.a[1]) if len(x.a)>1 else "2")+"])[2:] for z in y]"
     prefix("\\Con",350).__repr__=     lambda x: "congruences("+str(x.a[0])+")" # set of congruences of an algebra
     prefix("\\Pre",350).__repr__=     lambda x: "precongruences("+str(x.a[0])+")" # set of precongruences of a po-algebra
     infix("\\models", 550).__repr__ = lambda x: "check("+p9st(x.a[0])+",\""+p9st(x.a[1])+"\")" # check if A satisfies phi
-    infix("\\vdash", 550).__repr__ =  lambda x: "p9(pyp9("+p9st(x.a[0])+"),[pyp9(\""+p9st(x.a[1])+"\")],2,60)[0]" # proves
-    infix("\\nvdash", 550).__repr__ = lambda x: "p9(pyp9("+p9st(x.a[0])+"),[pyp9(\""+p9st(x.a[1])+"\")],10,0)[0]" # disproves
+    infix("\\vdash", 550).__repr__ =  lambda x: "pr9(pyp9("+p9st(x.a[0])+"),[pyp9(\""+p9st(x.a[1])+"\")],2,60)[0]" # proves
+    infix("\\nvdash", 550).__repr__ = lambda x: "pr9(pyp9("+p9st(x.a[0])+"),[pyp9(\""+p9st(x.a[1])+"\")],10,0)[0]" # disproves
 ########end of Prover9 syntax
 
 init_symbol_table()
@@ -462,8 +462,8 @@ def pyla(p,newl=False): # convert Python object to LaTeX string
   elif type(p)==list:  cntr=0; st="["+", ".join(pyla(el,True) for el in p)+"]";cntr=0
   elif type(p)==tuple: cntr=0; st="("+", ".join(pyla(el,True) for el in p)+")";cntr=0
   elif type(p)==bool:  st = "\mathbf{"+str(p)+"}"
-  elif pvrs and type(p)==Model: st = modelLa(p)
-  elif pvrs and type(p)==Proof: st = proofLa(p)
+  elif prvrs and type(p)==Model: st = modelLa(p)
+  elif prvrs and type(p)==Proof: st = proofLa(p)
   elif type(p)==str:
     if p=="N": return "\\text{No counterexample after 10 seconds}"
     try:
@@ -703,4 +703,4 @@ def m(st, info=False, output=False, nocolor=False):
   display(Markdown(out))
   if output: print(out)
 
-pvrs="Model" in dir() # check if provers module is loaded
+prvrs="Model" in dir() # check if provers module is loaded
