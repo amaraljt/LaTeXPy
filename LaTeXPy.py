@@ -1,6 +1,6 @@
-# Python program to parse LaTeX formulas and evaluate Python/Prover9 expressions
+# Python program to parse LaTeX formulas and produce Python/Prover9 expressions
 
-# by Peter Jipsen, version 2023-3-16, distributed under LGPL 3 or later.
+# by Peter Jipsen 2023-3-20 distributed under LGPL 3 or later.
 # Terms are read using Vaughn Pratt's top-down parsing algorithm.
 
 # List of symbols handled by the parser (at this point)
@@ -15,26 +15,28 @@
 # A LaTeX symbol named \abc... is translated to the Python variable _abc...
 
 # The macros below are used to simplify the input tokens that need to be typed.
-macros=r"""
-\renewcommand{\And}{\ \text{and}\ }
-\renewcommand{\Or}{\ \text{or}\ }
-\renewcommand{\Not}{\text{not}\ }
-\renewcommand{\m}{\mathbf}
-\renewcommand{\bb}{\mathbb}
-\renewcommand{\cc}{\mathcal}
-\renewcommand{\s}{\text}
-\renewcommand{\bsl}{\backslash}
-\renewcommand{\sm}{{\sim}}
-\renewcommand{\tup}[1]{(#1)}
-\renewcommand{\Mod}{\text{Mod}}
-\renewcommand{\Con}{\text{Con}}
-\renewcommand{\Pre}{\text{Pre}}
-"""
 
-import math, itertools, re, sys, subprocess
-#subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'provers'])
-#from provers import *
-from IPython.display import *
+RunningInCOLAB = 'google.colab' in str(get_ipython())
+ncmd = r"\newcommand" if RunningInCOLAB else r"\renewcommand"
+
+macros=r"\renewcommand{\And}{\ \text{and}\ }"+"\n"+\
+ncmd+r"{\Or}{\ \text{or}\ }"
+ncmd+r"{\Not}{\text{not}\ }"+"\n"+\
+ncmd+r"{\m}{\mathbf}"+"\n"+\
+ncmd+r"{\bb}{\mathbb}"+"\n"+\
+ncmd+r"{\cc}{\mathcal}"+"\n"+\
+ncmd+r"{\s}{\text}"+"\n"+\
+ncmd+r"{\bsl}{\backslash}"+"\n"+\
+ncmd+r"{\sm}{{\sim}}"+"\n"+\
+ncmd+r"{\tup}[1]{(#1)}"+"\n"+\
+ncmd+r"{\Mod}{\text{Mod}}"+"\n"+\
+ncmd+r"{\Con}{\text{Con}}"+"\n"+\
+ncmd+r"{\Pre}{\text{Pre}}"
+
+!pip install latex2sympy2
+from sympy import *
+init_session()
+from latex2sympy2 import *
 
 p9options=[ # redeclare Prover9 syntax
     "redeclare(conjunction, and)",
@@ -241,6 +243,7 @@ def init_symbol_table():
     postfix("f",300).__repr__ =       lambda x: "f"+w3(x,0)
     postfix("'",300).__repr__ =       lambda x: str(x.a[0])+"'"
     prefix("\\ln",310).__repr__ =     lambda x: "math.log("+str(x.a[0])+")"
+    prefix("\\sin",310).__repr__ =    lambda x: "math.sin("+str(x.a[0])+")"
     preorinfix("-",310).__repr__ =    lambda x: "-"+w(x,0) if len(x.a)==1 else str(x.a[0])+" - "+w(x,1) #negative or minus
     infix(":", 450).__repr__ =        lambda x: str(x.a[0])+": "+w3(x,1) # for f:A\to B
     infix("^", 300).__repr__ =        lambda x: "converse("+str(x.a[0])+")"\
@@ -299,6 +302,11 @@ def init_symbol_table():
     infix("\\implies", 504).__repr__ =lambda x: "not "+w3(x,0)+" or "+w3(x,1) # implication
     infix("\\iff", 505).__repr__ =    lambda x: w3(x,0)+" <=> "+w3(x,1)     # if and only if
     infix("\\mid", 550).__repr__ =    lambda x: str(x.a[0])+" mid "+str(x.a[1]) # such that
+    prefix("primefactors",310).__repr__ = lambda x: "latex(primefactors("+str(x.a[0])+"))" # factor an integer
+    prefix("ls",310).__repr__ =       lambda x: "latex2latex("+str(x.a[0])+")" # use the latex2sympy2 parser and sympy to calculate
+    prefix("factor",310).__repr__ =   lambda x: "latex(factor("+str(x.a[0])+("" if len(x.a)==1 else ","+str(x.a[1]))+"))" # factor a polynomial
+    prefix("solve",310).__repr__ =    lambda x: "latex(solve("+(str(x.a[0].a[0])+"-("+str(x.a[0].a[1])+")" if x.a[0].sy=="=" else str(x.a[0]))+\
+      ("" if len(x.a)==1 else ","+str(x.a[1]))+"))" # solve a (list of) equations
     prefix("show",310).__repr__ =     lambda x: "show("+str(x.a[0])+(")" if len(x.a)==1 else ","+str(x.a[1])+")") # show poset or (semi)lattice
     postfix("?", 600).__repr__ =      lambda x: str(x.a[0])+"?"             # calculate value and show it
     symbol("(end)")
@@ -625,6 +633,8 @@ def nextmath(st,i): #find next j,k>=i such that st[j:k] is inline or display mat
 
 def process(st, info=False, nocolor=False):
   # convert st (a LaTeX string) to Python/Prover9 code and evaluate it
+  if st[:3]=="ls(": # use latex2sympy2 parser
+    return ("" if nocolor else "\color{green}")+macros+st[3:-1]+("" if nocolor else "\color{blue}")+" = "+latex2latex(st[3:-1])
   t=parse(st)
   if info:
     print("Abstract syntax tree:", ast(t))
@@ -659,10 +669,10 @@ def process(st, info=False, nocolor=False):
   try:
     val=eval(str(tt))
     if info: print("Value:", val)
-    #ltx = pyla(val)
+    ltx = val if str(tt)[:5]=="latex" else pyla(val)
   except:
     return ("" if nocolor else "\color{green}")+macros+st
-  return ("" if nocolor else "\color{green}")+macros+st+("" if nocolor else "\color{blue}")+" = "+pyla(val)
+  return ("" if nocolor else "\color{green}")+macros+st+("" if nocolor else "\color{blue}")+" = "+ltx
 
 def l(st, info=False, output=False, nocolor=False):
   # Main function to translate valid LaTeX/Markdown string st
