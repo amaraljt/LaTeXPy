@@ -58,6 +58,7 @@ def p9st(t):
   return ps
 
 def p9(assume_list, goal_list, mace_seconds=2, prover_seconds=60, cardinality=None, params='', info=False):
+    global prover9
     if type(cardinality) == int or cardinality == None:
         return prover9(assume_list, goal_list, mace_seconds, prover_seconds, cardinality, params=params, info=info, options=p9options)
     else:
