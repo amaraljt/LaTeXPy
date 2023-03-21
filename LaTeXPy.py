@@ -1,6 +1,6 @@
 # Python program to parse LaTeX formulas and produce Python/Prover9 expressions
 
-# by Peter Jipsen 2023-3-20 distributed under LGPL 3 or later.
+# by Peter Jipsen 2023-3-21 distributed under LGPL 3 or later.
 # Terms are read using Vaughn Pratt's top-down parsing algorithm.
 
 # List of symbols handled by the parser (at this point)
@@ -15,23 +15,24 @@
 # A LaTeX symbol named \abc... is translated to the Python variable _abc...
 
 # The macros below are used to simplify the input tokens that need to be typed.
-
+macros=r"""
+\renewcommand{\And}{\ \text{and}\ }
+\newcommand{\Or}{\ \text{or}\ }
+\newcommand{\Not}{\text{not}\ }
+\newcommand{\m}{\mathbf}
+\newcommand{\bb}{\mathbb}
+\newcommand{\cc}{\mathcal}
+\newcommand{\s}{\text}
+\newcommand{\bsl}{\backslash}
+\newcommand{\sm}{{\sim}}
+\newcommand{\tup}[1]{(#1)}
+\newcommand{\Mod}{\text{Mod}}
+\newcommand{\Con}{\text{Con}}
+\newcommand{\Pre}{\text{Pre}}
+"""
+display(Markdown("$"+macros+"$"))
 RunningInCOLAB = 'google.colab' in str(get_ipython())
-ncmd = r"\newcommand" if RunningInCOLAB else r"\renewcommand"
-
-macros=r"\renewcommand{\And}{\ \text{and}\ }"+"\n"+\
-ncmd+r"{\Or}{\ \text{or}\ }"
-ncmd+r"{\Not}{\text{not}\ }"+"\n"+\
-ncmd+r"{\m}{\mathbf}"+"\n"+\
-ncmd+r"{\bb}{\mathbb}"+"\n"+\
-ncmd+r"{\cc}{\mathcal}"+"\n"+\
-ncmd+r"{\s}{\text}"+"\n"+\
-ncmd+r"{\bsl}{\backslash}"+"\n"+\
-ncmd+r"{\sm}{{\sim}}"+"\n"+\
-ncmd+r"{\tup}[1]{(#1)}"+"\n"+\
-ncmd+r"{\Mod}{\text{Mod}}"+"\n"+\
-ncmd+r"{\Con}{\text{Con}}"+"\n"+\
-ncmd+r"{\Pre}{\text{Pre}}"
+if not RunningInCOLAB: macros=""
 
 !pip install latex2sympy2
 from sympy import *
@@ -66,6 +67,8 @@ def p9(assume_list, goal_list, mace_seconds=2, prover_seconds=60, cardinality=No
 
 from IPython.display import *
 import math, itertools, re
+_pi = math.pi
+_e = math.e
 
 def is_postfix(t):
     return hasattr(t,'leftd') and len(t.a)==1
@@ -243,8 +246,7 @@ def init_symbol_table():
     postfix("f",300).__repr__ =       lambda x: "f"+w3(x,0)
     postfix("'",300).__repr__ =       lambda x: str(x.a[0])+"'"
     prefix("\\ln",310).__repr__ =     lambda x: "math.log("+str(x.a[0])+")"
-    prefix("\\sin",310).__repr__ =    lambda x: "math.sin("+str(x.a[0])+")"
-    preorinfix("-",310).__repr__ =    lambda x: "-"+w(x,0) if len(x.a)==1 else str(x.a[0])+" - "+w(x,1) #negative or minus
+    prefix("\\sin",310).__repr__ =    lambda x: "sin("+str(x.a[0])+")"  # use math.sin if sympy is not loaded
     infix(":", 450).__repr__ =        lambda x: str(x.a[0])+": "+w3(x,1) # for f:A\to B
     infix("^", 300).__repr__ =        lambda x: "converse("+str(x.a[0])+")"\
       if len(x.a)>1 and str(x.a[1].sy)=='\\smallsmile' else "O("+str(x.a[0])+")"\
@@ -255,8 +257,9 @@ def init_symbol_table():
     infix("\\circ", 303).__repr__ =   lambda x: "relcomposition("+w(x,1)+","+w(x,0)+")" # function composition
     infix("*", 311).__repr__ =        lambda x: w2(x,0)+"\\cdot "+w2(x,1)   # times
     infix("\\cdot", 311).__repr__ =   lambda x: w2(x,0)+"*"+w2(x,1)         # times
-    infix("/", 312).__repr__ =        lambda x: w(x,0)+"/"+w(x,1)           # over
+    infix("/", 312).__repr__ =        lambda x: w2(x,0)+"/"+w2(x,1)         # over
     infix("+", 313).__repr__ =        lambda x: w2(x,0)+" + "+w2(x,1)       # plus
+    preorinfix("-",313).__repr__ =    lambda x: "-"+w(x,0) if len(x.a)==1 else str(x.a[0])+" - "+w(x,1) #negative or minus
     symbol("\\top").__repr__ =        lambda x: "T"
     symbol("\\bot").__repr__ =        lambda x: "0"
     infix("\\times", 322).__repr__ =  lambda x: "frozenset(itertools.product("+w(x,0)+","+w(x,1)+"))" #product
@@ -676,8 +679,7 @@ def process(st, info=False, nocolor=False):
 
 def l(st, info=False, output=False, nocolor=False):
   # Main function to translate valid LaTeX/Markdown string st
-  #global P9
-  #P9 = False # parse LaTeX math input between $-signs and output Python syntax
+  global macros
   st = re.sub("%.*?\n","\n",st) #remove LaTeX comments
   (j,k,d) = nextmath(st,0)
   out = st[0:j]
@@ -691,8 +693,7 @@ def l(st, info=False, output=False, nocolor=False):
 
 def m(st, info=False, output=False, nocolor=False): 
   # math input; $-signs are not needed, but commands should be separated by empty lines
-  #global P9
-  #P9 = True # parse and output Prover9 syntax (rather than Python syntax)
+  global macros
   st = re.sub("%.*?\n","\n",st) #remove LaTeX comments
   li = st.split("\n\n")
   out = "$"+"$\n\n$".join(process(x.strip(),info,nocolor) for x in li)+"$"
