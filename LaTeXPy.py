@@ -15,7 +15,6 @@
 # A LaTeX symbol named \abc... is translated to the Python variable _abc...
 
 import math, itertools, re, sys, subprocess
-if prover9: subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'provers'])
 subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'latex2sympy2'])
 from sympy import *
 init_session()
