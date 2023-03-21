@@ -16,7 +16,6 @@
 
 import math, itertools, re, sys, subprocess
 subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'latex2sympy2'])
-!pip install latex2sympy2
 from sympy import *
 init_session()
 from latex2sympy2 import *
