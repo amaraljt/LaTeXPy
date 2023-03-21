@@ -14,7 +14,15 @@
 # Greek letters and most other LaTeX symbols can be used as variable names.
 # A LaTeX symbol named \abc... is translated to the Python variable _abc...
 
-# The macros below are used to simplify the input tokens that need to be typed.
+import math, itertools, re, sys, subprocess
+subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'latex2sympy2'])
+!pip install latex2sympy2
+from sympy import *
+init_session()
+from latex2sympy2 import *
+from IPython.display import *
+
+# The macros below are used to simplify the input that needs to be typed.
 macros=r"""
 \renewcommand{\And}{\ \text{and}\ }
 \newcommand{\Or}{\ \text{or}\ }
@@ -33,11 +41,6 @@ macros=r"""
 display(Markdown("$"+macros+"$"))
 RunningInCOLAB = 'google.colab' in str(get_ipython())
 if not RunningInCOLAB: macros=""
-
-!pip install latex2sympy2
-from sympy import *
-init_session()
-from latex2sympy2 import *
 
 p9options=[ # redeclare Prover9 syntax
     "redeclare(conjunction, and)",
