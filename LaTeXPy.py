@@ -683,6 +683,7 @@ def process(st, info=False, nocolor=False):
 def l(st, info=False, output=False, nocolor=False):
   # Main function to translate valid LaTeX/Markdown string st
   global macros
+  st = re.sub("\n%.*?\n","\n",st) #remove LaTeX comments
   st = re.sub("%.*?\n","\n",st) #remove LaTeX comments
   (j,k,d) = nextmath(st,0)
   out = st[0:j]
