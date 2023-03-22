@@ -15,11 +15,8 @@ https://colab.research.google.com (use a free gmail account to login to Colab).
 
 **Step 1:** Click on the link above, and start a new Colab notebook (use **File->New notebook** on the webpage menu, **not** on your computer menu).
 
-**Step 2:** Copy the following lines into the first notebook cell and click the red start button to install LaTeXPy. This takes about 40 seconds since it installs the Prover9 theorem prover on the Google server (nothing is installed on your computer).
+**Step 2:** Copy the following lines into the first notebook cell and click the red start button to install LaTeXPy. This takes a few seconds since it installs `latex2sympy2` on the colab server (nothing is installed or modified on your computer).
 ```
-#Can comment out the next two lines if you are not using Prover9
-!pip install provers
-from provers import *
 !rm -rf LaTeXPy #remove any previous version
 !git clone https://github.com/jipsen/LaTeXPy.git
 execfile("/content/LaTeXPy/LaTeXPy.py")
@@ -82,17 +79,16 @@ $\{x\in A\mid x\ne 1\And\forall {y\in A, y\vert x\implies y=1\Or y=x}\}?$
 """)
 ```
 
-**More examples** can be found in the Examples folder (presentend as self-contained Jupyter notebooks; just copy the whole notebook and upload it into a Colab notebook at https://colab.research.google.com).
+**More examples** can be found in the Examples folder (presented as self-contained Jupyter notebooks; just copy the whole notebook and upload it into a Colab notebook at https://colab.research.google.com).
 
 The following design principles are part of this project:
 
 1. The LaTeX input is written using standard mathematical/logical notation.
 2. Input and output can be copy-pasted from and to standard LaTeX documents.
 3. LaTeXPy is intended to be used in a Jupyter notebook environment. It makes use of the display module (for LaTeX and Markdown) and the graphviz module (for graphs and Hasse diagrams).
-4. The parser does not require a parser generator. Local modifications and extensions should be fairly easy to make for someone familiar with Python.
-5. The LaTeX interface connects with automated theorem provers and model finders (currently Prover9/Mace4). Future syntax extensions may include other provers, SMT-solvers and mathematical Python modules like SymPy and NumPy.
+4. The parser does not require a parser generator. Local modifications and extensions should be fairly easy to make for someone familiar with Python. Currently the `latex2sympy2` package is also used.
+5. The LaTeX interface connects with automated theorem provers and model finders (currently Prover9/Mace4). Future syntax extensions may include other automated provers and SMT-solvers.
 
 The current version of LaTeXPy.py is experimental and intended to get feedback on design decisions.
-The input language covers an interesting fragment of discrete mathematics (including finite sets 
-and first-order logic), but the syntax is still evolving and incorrect input currently does not 
+The input language covers an interesting fragment of discrete mathematics (including finite sets, first-order logic and some `SymPy` functionality), but the syntax is still evolving and incorrect input currently does not 
 produce useful error messages.
