@@ -15,29 +15,31 @@ https://colab.research.google.com (use a free gmail account to login to Colab).
 
 **Step 1:** Click on the link above, and start a new Colab notebook (use **File->New notebook** on the webpage menu, **not** on your computer menu).
 
-**Step 2:** Copy the following lines into the first notebook cell and click the red start button to install LaTeXPy. This takes about 30 seconds since it installs the Prover9 theorem prover on the Google server (nothing is installed on your computer).
+**Step 2:** Copy the following lines into the first notebook cell and click the red start button to install LaTeXPy. This takes about 40 seconds since it installs the Prover9 theorem prover on the Google server (nothing is installed on your computer).
 ```
+#Can comment out the next two lines if you are not using Prover9
+!pip install provers
+from provers import *
 !rm -rf LaTeXPy #remove any previous version
 !git clone https://github.com/jipsen/LaTeXPy.git
-import sys; sys.path.append('/content/LaTeXPy'); import LaTeXPy as l
+execfile("/content/LaTeXPy/LaTeXPy.py")
 ```
 **Step 3:** Copy some of the examples below to see how to do various calculations using the LaTeX syntax that is valid with this script.
 
-The main function of the code is called `l.l(...)` and takes a **r"""raw string"""** as input. (A **rawstring** in Python starts with r" and in such strings the backslash is an ordinary character. The triple-quotes """ are used for strings that extend over several lines. If something doesn't work it may help to add a second input in the form `l.l(rawstring, 1)` then some diagnostic output is printed as well.)
+The main function of the code is called `l(...)` and takes a LaTeX **r"""raw string"""** as input. (A **rawstring** in Python starts with r" and in such strings the backslash is an ordinary character. The triple-quotes """ are used for strings that extend over several lines. If something doesn't work it may help to add a second input in the form `l(rawstring, 1)` then some diagnostic output is printed as well.)
 
 Below are some example of what is covered (can be copy-pasted as input ). A **question mark** after an expression is a request to evaluate the expression and insert the result in the typeset output (colored **blue**). Expressions with a **top-level equal sign and a variable on the left** are interpreted as assignments that get executed by Python. Input that was parsed and evaluated without error appears in **green**, and all other expressions (without ? or =, or that generated errors) as well as text outside of $...$ math regions appear in black.
 
 ```
-l.l(r"""
-Here we are using the l.l(...) command which requires $...$ to surround the math parts and it also assumes that
-the parser should translate to Python (rather than to Prover9) syntax.
+l(r"""
+Here we are using the l(...) command which requires $...$ to surround math expressions.
 
 Arithmetic expressions are written in calculator style, e.g., $1+2\cdot 4/4^2 ?$. 
 The '?' indicates that the answer should be inserted in the typeset output.
 ```
 
 ```
-l.l(r"""
+l(r"""
 Sets are finite and can contain numbers, unevaluated expressions and 
 other (finite) sets e.g., $A=\{2,a,b,\gamma,\delta\}?$.
 
@@ -46,7 +48,7 @@ $A\setminus \{1,2,3,b\}?$, $A\oplus \{1,2,3,b\}?$.
 ```
 
 ```
-l.l(r"""
+l(r"""
 Ranges $\{3,\dots,10\}?$, cartesian product $\{1,2,3\}\times\{a,b\}?$.
 
 Powerset $P=\mathcal{P}(\{1,2,3,4\})?$ 
@@ -57,7 +59,7 @@ A lattice of subsets can be displayed using $show(P)$ (it is shown before the re
 ```
 
 ```
-l.l(r"""
+l(r"""
 Lists use [...] syntax: $L=[a,b,c]$ and subscripts access elements. 
 The first element is $L_0?$, and if $i=2$ then $L_i?$.
 
@@ -69,7 +71,7 @@ The last element is $u_{-1}?$, and if $i=1$ then $u_i?$.
 ```
 
 ```
-l.l(r"""
+l(r"""
 Set comprehension has two forms: $A=\{1,\dots,100\}$, 
 
 $\{x\in A\mid p(x)\}$ and $\{f(x)\mid x\in A\And p(x)\}$. In the second case the property $p(x)$ can also be omitted.
