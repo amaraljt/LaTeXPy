@@ -502,7 +502,7 @@ def m4diag(li,symbols="<= v", unaryRel=""):
     # use graphviz to display a mace4 structure as a diagram
     # symbols is a list of binary symbols that define a poset or graph
     # unaryRel is a unary relation symbol that is displayed by red nodes
-    i = 0
+    i = -1
     sy = symbols.split(" ")
     #print(sy)
     st = ""
