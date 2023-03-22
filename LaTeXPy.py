@@ -14,6 +14,8 @@
 # Greek letters and most other LaTeX symbols can be used as variable names.
 # A LaTeX symbol named \abc... is translated to the Python variable _abc...
 
+#!pip install provers
+#from provers import *
 import math, itertools, re, sys, subprocess
 subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'latex2sympy2'])
 from sympy import *
@@ -476,13 +478,54 @@ def pyla(p,newl=False): # convert Python object to LaTeX string
   #if newl and len(st)>=5: return " \\ "+st
   return st
 
+import networkx as nx
+from graphviz import Graph
+from IPython.display import display_html
+def hasse_diagram(op,rel,dual,unary=[]):
+    A = range(len(op))
+    G = nx.DiGraph()
+    if rel:
+        G.add_edges_from([(x,y) for x in A for y in A if (op[y][x] if dual else op[x][y]) and x!=y])
+    else: 
+        G.add_edges_from([(x,y) for x in A for y in A if op[x][y]==(y if dual else x) and x!=y])
+    try:
+        G = nx.algorithms.dag.transitive_reduction(G)
+    except:
+        pass
+    P = Graph()
+    P.attr('node', shape='circle', width='.15', height='.15', fixedsize='true', fontsize='10')
+    for x in A: P.node(str(x), color='red' if unary[x] else 'black')
+    P.edges([(str(x[0]),str(x[1])) for x in G.edges])
+    return P
+
+def m4diag(li,symbols="<= v", unaryRel=""):
+    # use graphviz to display a mace4 structure as a diagram
+    # symbols is a list of binary symbols that define a poset or graph
+    # unaryRel is a unary relation symbol that is displayed by red nodes
+    i = 0
+    sy = symbols.split(" ")
+    #print(sy)
+    st = ""
+    for x in li:
+        i+=1
+        st+=str(i)
+        uR = x.relations[unaryRel] if unaryRel!="" else [0]*x.cardinality
+        for s in sy:
+            t = s[:-1] if s[-1]=='d' else s
+            if t in x.operations.keys():
+                st+=hasse_diagram(x.operations[t],False,s[-1]=='d',uR)._repr_image_svg_xml()+"&nbsp; &nbsp; &nbsp; "
+            elif t in x.relations.keys():
+                st+=hasse_diagram(x.relations[t], True, s[-1]=='d',uR)._repr_image_svg_xml()+"&nbsp; &nbsp; &nbsp; "
+        st+=" &nbsp; "
+    display_html(st,raw=True)
+
 ######################################
 ########## Prover9 code below
 
 # Translate from Prover9 symbols to LaTeX symbols
 p92la = {"*":"\\cdot", "^":"\\wedge", "v":"\\vee", "O":"{}^{-1}", "<=":"\\le", "~":"\\sim",
-         "&":"\\ \\text{and}\\ ", "|":"\\ \\text{or}\\ ",
-         "->":"\\implies", "<->":"\\iff", "all":"\\forall", "exists":"\\exists"}
+         "and":"\\ \\text{and}\\ ", "or":"\\ \\text{or}\\ ",
+         "==>":"\\implies", "<=>":"\\iff", "all":"\\forall", "exists":"\\exists"}
 
 def p92lasym(st):
   return p92la[st] if st in p92la.keys() else st
@@ -535,7 +578,8 @@ def compatiblepreorders(A, precon=True, sym=False):
   for o in A.operations.keys():
     if o in signum.keys(): compat += [signum[o]]
     elif type(A.operations[o])!=int: raise SyntaxError("Operation not handled")
-  c=prover9(A.diagram("")+compat,[],100000,0,m,noniso=False, options=p9options)
+#  print(A.diagram("")+compat)
+  c=prover9(A.diagram("")+compat,[],100000,0,m,noniso=False)#, options=p9options)
   return frozenset([rel2pairs(x.relations["C"]) for x in c])
 
 def precongruences(A):
@@ -567,6 +611,7 @@ def show(K,n=0): # show a list of Mace4 models using graphviz or show a set of s
     if "v" in K[0].operations.keys(): ops.append("v")
     if "*" in K[0].operations.keys(): ops.append("*d")
     st=" ".join(ops[:-n])
+    print(st)
     m4diag(K,st)
   elif type(K)==frozenset: m4diag([poset2model(K)])
   elif type(K)==list:
@@ -683,7 +728,6 @@ def process(st, info=False, nocolor=False):
 def l(st, info=False, output=False, nocolor=False):
   # Main function to translate valid LaTeX/Markdown string st
   global macros
-  st = re.sub("\n%.*?\n","\n",st) #remove LaTeX comments
   st = re.sub("%.*?\n","\n",st) #remove LaTeX comments
   (j,k,d) = nextmath(st,0)
   out = st[0:j]
@@ -698,7 +742,6 @@ def l(st, info=False, output=False, nocolor=False):
 def m(st, info=False, output=False, nocolor=False): 
   # math input; $-signs are not needed, but commands should be separated by empty lines
   global macros
-  st = re.sub("\n%.*?\n","\n",st) #remove LaTeX comments
   st = re.sub("%.*?\n","\n",st) #remove LaTeX comments
   li = st.split("\n\n")
   out = "$"+"$\n\n$".join(process(x.strip(),info,nocolor) for x in li)+"$"
