@@ -697,6 +697,7 @@ def l(st, info=False, output=False, nocolor=False):
 def m(st, info=False, output=False, nocolor=False): 
   # math input; $-signs are not needed, but commands should be separated by empty lines
   global macros
+  st = re.sub("\n%.*?\n","\n",st) #remove LaTeX comments
   st = re.sub("%.*?\n","\n",st) #remove LaTeX comments
   li = st.split("\n\n")
   out = "$"+"$\n\n$".join(process(x.strip(),info,nocolor) for x in li)+"$"
