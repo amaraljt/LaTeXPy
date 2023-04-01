@@ -72,7 +72,7 @@ def pr9(assume_list, goal_list, mace_seconds=2, prover_seconds=60, cardinality=N
 
 from IPython.display import *
 import math, itertools, re
-_pi = math.pi
+_pi = sympy.pi
 _e = math.e
 
 def is_postfix(t):
@@ -247,6 +247,7 @@ def init_symbol_table():
     symbol("]")
     symbol("\\}")
     symbol(",")
+    #symbol("\\pi",310).__repr__ =    lambda x: "sympy.pi("+str(x.a[0])+")"
     postfix("!",300).__repr__ =       lambda x: "math.factorial("+str(x.a[0])+")"
     postfix("f",300).__repr__ =       lambda x: "f"+w3(x,0)
     postfix("'",300).__repr__ =       lambda x: str(x.a[0])+"'"
@@ -280,6 +281,12 @@ def init_symbol_table():
     prefix("\\m",350).__repr__ =      lambda x: "_m"+str(x.a[0].sy)         # algebra or structure or theory
     prefix("\\mathbb",350).__repr__ = lambda x: "_mathbb"+str(x.a[0].sy)    # blackboard bold
     prefix("\\bb",350).__repr__ =     lambda x: "_bb"+str(x.a[0].sy)        # blackboard bold
+
+    ###### testing #####
+    prefix("\sin",310).__repr__ =    lambda x: "sympy.sin("+str(x.a[0])+")"
+    prefix("\\cos",310).__repr__ =    lambda x: "math.cos("+str(x.a[0])+")"
+    prefix("\\tan",310).__repr__ =    lambda x: "math.tan("+str(x.a[0])+")"
+
     infix("\\vert", 365).__repr__ =   lambda x: w(x,1)+"%"+w(x,0)+"==0"     # divides
     infix("\\in", 370).__repr__ =     lambda x: w(x,0)+" in "+w(x,1)        # element of
     infix("\\subseteq", 370).__repr__=lambda x: w(x,0)+" <= "+w(x,1)        # subset of
