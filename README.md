@@ -1,5 +1,9 @@
 # LaTeXPy
 
+### Group Members
+Jared Amaral, Jose Arellano, Nathan Nguyen, Alex Wunderli
+
+
 The aim of this project is to use LaTeX as a high-level mathematical calculator syntax 
 that can be used in undergraduate education by students who know or learn some basic LaTeX, 
 but they should not need to know any Python.
@@ -18,7 +22,7 @@ https://colab.research.google.com (use a free gmail account to login to Colab).
 **Step 2:** Copy the following lines into the first notebook cell and click the red start button to install LaTeXPy. This takes a few seconds since it installs `latex2sympy2` on the colab server (nothing is installed or modified on your computer).
 ```
 !rm -rf LaTeXPy #remove any previous version
-!git clone https://github.com/jipsen/LaTeXPy.git
+!git clone https://github.com/amaraljt/LaTeXPy.git
 execfile("/content/LaTeXPy/LaTeXPy.py")
 ```
 **Step 3:** Copy some of the examples below to see how to do various calculations using the LaTeX syntax that is valid with this script.

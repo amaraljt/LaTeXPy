@@ -26,18 +26,18 @@ from IPython.display import *
 # The macros below are used to simplify the input that needs to be typed.
 macros=r"""
 \renewcommand{\And}{\ \text{and}\ }
-\newcommand{\Or}{\ \text{or}\ }
-\newcommand{\Not}{\text{not}\ }
-\newcommand{\m}{\mathbf}
-\newcommand{\bb}{\mathbb}
-\newcommand{\cc}{\mathcal}
-\newcommand{\s}{\text}
-\newcommand{\bsl}{\backslash}
-\newcommand{\sm}{{\sim}}
-\newcommand{\tup}[1]{(#1)}
-\newcommand{\Mod}{\text{Mod}}
-\newcommand{\Con}{\text{Con}}
-\newcommand{\Pre}{\text{Pre}}
+\renewcommand{\Or}{\ \text{or}\ }
+\renewcommand{\Not}{\text{not}\ }
+\renewcommand{\m}{\mathbf}
+\renewcommand{\bb}{\mathbb}
+\renewcommand{\cc}{\mathcal}
+\renewcommand{\s}{\text}
+\renewcommand{\bsl}{\backslash}
+\renewcommand{\sm}{{\sim}}
+\renewcommand{\tup}[1]{(#1)}
+\renewcommand{\Mod}{\text{Mod}}
+\renewcommand{\Con}{\text{Con}}
+\renewcommand{\Pre}{\text{Pre}}
 """
 display(Markdown("$"+macros+"$"))
 RunningInCOLAB = 'google.colab' in str(get_ipython())
@@ -247,7 +247,6 @@ def init_symbol_table():
     symbol("]")
     symbol("\\}")
     symbol(",")
-    #symbol("\\pi",310).__repr__ =    lambda x: "sympy.pi("+str(x.a[0])+")"
     postfix("!",300).__repr__ =       lambda x: "math.factorial("+str(x.a[0])+")"
     postfix("f",300).__repr__ =       lambda x: "f"+w3(x,0)
     postfix("'",300).__repr__ =       lambda x: str(x.a[0])+"'"
@@ -282,10 +281,17 @@ def init_symbol_table():
     prefix("\\mathbb",350).__repr__ = lambda x: "_mathbb"+str(x.a[0].sy)    # blackboard bold
     prefix("\\bb",350).__repr__ =     lambda x: "_bb"+str(x.a[0].sy)        # blackboard bold
 
-    ###### testing #####
-    prefix("\sin",310).__repr__ =    lambda x: "sympy.sin("+str(x.a[0])+")"
-    prefix("\\cos",310).__repr__ =    lambda x: "math.cos("+str(x.a[0])+")"
-    prefix("\\tan",310).__repr__ =    lambda x: "math.tan("+str(x.a[0])+")"
+    ###### testing trig functions ##### (works with one variable and no other operations inside it)
+    prefix("\\sin",310).__repr__ =    lambda x: "sympy.sin("+str(x.a[0])+")"
+    prefix("\\cos",310).__repr__ =    lambda x: "sympy.cos("+str(x.a[0])+")"
+    prefix("\\tan",310).__repr__ =    lambda x: "sympy.tan("+str(x.a[0])+")"
+    prefix("\\arcsin",310).__repr__ =    lambda x: "sympy.asin("+str(x.a[0])+")"
+    prefix("\\arccos",310).__repr__ =    lambda x: "sympy.acos("+str(x.a[0])+")"
+    prefix("\\arctan",310).__repr__ =    lambda x: "sympy.atan("+str(x.a[0])+")"
+
+    # testing derivatives/integrations ( NOT WORKING )
+    prefix("\\frac",310).__repr__ =    lambda x: "sympy.simplify("+ str(x.a[0]) + ")"
+    prefix("\\frac{d}{dx}",310).__repr__ =    lambda x: "sympy.diff("+str(x.a[0])+")"
 
     infix("\\vert", 365).__repr__ =   lambda x: w(x,1)+"%"+w(x,0)+"==0"     # divides
     infix("\\in", 370).__repr__ =     lambda x: w(x,0)+" in "+w(x,1)        # element of
@@ -352,11 +358,16 @@ def init_symbol_table():
 
 init_symbol_table()
 
+# tokenize(st):
+  # 
+
 def tokenize(st):
     i = 0
+    # loop the length of the string
     while i<len(st):
         tok = st[i]
         j = i+1
+        # if 
         if j<len(st) and (st[j]=="{" or st[j]=="}") and tok=='\\':
           j += 1
           tok = st[i:j]
@@ -407,6 +418,9 @@ def expression(rbp=1200): # read an expression from token stream
         token = next()
         left = t.leftd(left)
     return left
+
+# parse(str):
+  # 
 
 def parse(str):
     global token, next
@@ -526,171 +540,47 @@ def m4diag(li,symbols="<= v", unaryRel=""):
         st+=" &nbsp; "
     display_html(st,raw=True)
 
-######################################
-########## Prover9 code below
-
-# Translate from Prover9 symbols to LaTeX symbols
-p92la = {"*":"\\cdot", "^":"\\wedge", "v":"\\vee", "O":"{}^{-1}", "<=":"\\le", "~":"\\sim",
-         "and":"\\ \\text{and}\\ ", "or":"\\ \\text{or}\\ ",
-         "==>":"\\implies", "<=>":"\\iff", "all":"\\forall", "exists":"\\exists"}
-
-def p92lasym(st):
-  return p92la[st] if st in p92la.keys() else st
-
-def p9la(st): # convert Prover9 ast to LaTeX string
-  try:
-    if st.find("#")==-1: return str(parse(st.replace("$","")))#.replace("|","\\o")))
-    #print("hello "+st.find(r"# label(non_clause)"))
-    if st.find(r"# label(goal)")!=-1: return str(parse(st[:st.find("#")].replace("|","\\o")))+"\\text{ goal}"
-    return str(parse(st[:st.find("#")]))#.replace("|","\\o")))
-  except: return st
-
-def pyp9(p): # convert Python object to Prover9 input
-  if type(p)==frozenset or  type(p)==list:
-    return [pyp9(elmt) for elmt in p]
-  #print(str(p))
-  return str(p)
-
-def strorval(p):
-  #return subterm as an evaluated string or if eval fails, just as a string
-  if P9: return 'r\"'+str(p)+'\"'
-  try:
-    val = eval(str(p))
-    return str(val)
-  except:
-    return 'r\"'+str(p)+'\"'
-
-def power(s,t):
-  #print(type(s),s,type(t),t)
-  if type(s)==str:
-    if t=="-1":
-      return "O("+s+")"
-  return s**t
-
-def compatiblepreorders(A, precon=True, sym=False):
-  signum={
-  "-":"C(x,y)->C(-y,-x)",
-  "~":"C(x,y)->C(~y,~x)",
-  "f":"C(x,y)->C(f(x),f(y))",
-  "*":"C(x,y)->C(x*z,y*z)&C(z*x,z*y)",
-  "+":"C(x,y)->C(y+z,x+z)&C(z+y,z+x)",### order reversing in both arguments!!
-  "\\":"C(x,y)->C(y\ z,x\ z)&C(z\ x,z\ y)",
-  "/":"C(x,y)->C(x/z,y/z)&C(z/y,z/x)",
-  "^":"C(x,y)->C(x^z,y^z)&C(z^x,z^y)",
-  "v":"C(x,y)->C(x v z,y v z)&C(z v x,z v y)",
-  }
-  if type(A)==str: A=eval(A)
-  m=A.cardinality
-  compat = ["C(x,y)&C(y,z)->C(x,z)"]+(["x<=y->C(x,y)"] if precon else ["C(x,x)"])+(["C(x,y)->C(y,x)"] if sym else [])
-  for o in A.operations.keys():
-    if o in signum.keys(): compat += [signum[o]]
-    elif type(A.operations[o])!=int: raise SyntaxError("Operation not handled")
-  c=prover9(A.diagram("")+compat,[],100000,0,m,noniso=False)#, options=p9options)
-  return frozenset([rel2pairs(x.relations["C"]) for x in c])
-
-def precongruences(A):
-  if type(A)==Model: return compatiblepreorders(A)
-  return [compatiblepreorders(x) for x in A]
-
-def congruences(A):
-  if type(A)==Model: return frozenset(eqrel2partition(x) for x in compatiblepreorders(A,False,True))
-  return [frozenset(eqrel2partition(x) for x in compatiblepreorders(y,False,True)) for y in A]
-
-def poset2model(A):
-    if len(A)==0: raise Error("Can't show Hasse diagram of an empty set")
-    k = list(A)
-    S = range(len(A))
-    if all(type(x)==frozenset for x in k[0]): 
-      U = union(k[0])
-      if all(all(type(y)==frozenset for y in x) and union(x)==U for x in k[1:]): #assume K is a set of partitions
-        li = [[all(any(x<=y for y in k[j]) for x in k[i]) for i in S] for j in S]
-      else: li = [[k[i]<=k[j] for i in S] for j in S]
-    else: li = [[k[i]<=k[j] for i in S] for j in S]
-    return Model(cardinality=len(k),relations={"<=":li})
-
-def show(K,n=0): # show a list of Mace4 models using graphviz or show a set of subsets or partitions
-  if type(K)==Model: K=[K]
-  if type(K)==list and len(K)>0 and type(K[0])==Model:
-    ops = []
-    if "<=" in K[0].relations.keys(): ops.append("<=d")
-    if "^" in K[0].operations.keys(): ops.append("^d")
-    if "v" in K[0].operations.keys(): ops.append("v")
-    if "*" in K[0].operations.keys(): ops.append("*d")
-    st=" ".join(ops[:-n])
-    m4diag(K,st)
-  elif type(K)==frozenset: m4diag([poset2model(K)])
-  elif type(K)==list:
-    m4diag([poset2model(x) for x in K])
-
-def check(structure,FOformula_list,info=False):
-  FOformula_l=[FOformula_list] if type(FOformula_list)==str else FOformula_list
-  for st in FOformula_l:
-    lt = []
-    if "<=" in st:
-      if "+" in st: lt = ["x<=y <-> x+y=y"]
-      if "*" in st: lt = ["x<=y <-> x*y=x"]
-      if "v" in st: lt = ["x<=y <-> x v y=y"]
-      if "^" in st: lt = ["x<=y <-> x^y=x"]
-    li = prover9(structure.diagram("")+lt,[st],1000,0,structure.cardinality,one=True, options=p9options)
-    if li!=[]:
-      if info: return li+[st+" fails"]
-      return False
-  return True
-
-def proofLa(P):
-  #print(str(dir(P)))
-  st = "\\begin{array}{rll}"
-  for x in P.proof:
-    st+=str(x[0])+"&"+p9la(x[1])+"&"+str(x[2])[1:-1]+"\\\\\n"
-  return st+"\\end{array}"
-
-def modelLa(A):
-  global cntr
-  n = A.cardinality
-  o = A.operations
-  r = A.relations
-  st = "{\\scriptsize\\left["
-  for rl in r.keys():
-    #if type(o[fn])!=list: st+=fn+"="+str(o[fn])+",\ \n"
-    if type(r[rl][0])!=list: 
-      st+=p92la[rl]+" = \\{"+",".join(str(i) for i in range(n) if r[rl][i])+"\\},\ \n"
-    else: 
-      st+="\\begin{array}{c|"+n*"c"+"}\n"+\
-      p92lasym(rl)+"_{"+str(cntr)+"}&"+"&".join(str(i) for i in range(n))+r"\\\hline"+"\n"+\
-        (r"\\"+"\n").join(str(i)+"&"+"&".join(("t" if r[rl][i][j] else "")
-        for j in range(n)) for i in range(n))+"\\end{array},\ \n"
-  for fn in o.keys():
-    if type(o[fn])!=list: st+=fn+"="+str(o[fn])+",\ \n"
-    elif type(o[fn][0])!=list: 
-      st+="\\begin{array}{c}\n"+(r"\\"+"\n").join((str(i)+p92lasym(fn)\
-        if fn in ["O","'"] else p92lasym(fn)+str(i))+"="+str(o[fn][i]) for i in range(n))+"\\end{array},\ \n"
-    else: 
-      st+="\\begin{array}{c|"+n*"c"+"}\n"+\
-      p92lasym(fn)+"_{"+str(cntr)+"}&"+"&".join(str(i) for i in range(n))+r"\\\hline"+"\n"+\
-        (r"\\"+"\n").join(str(i)+"&"+"&".join(str(o[fn][i][j]) 
-        for j in range(n)) for i in range(n))+"\\end{array},\ \n"
-  cntr+=1
-  return st[:-4]+"\\right]}\n"
-##### end of prover9 code
-#########################################
-
-# Convert (a subset of) LaTeX input to valid Python+provers(+sympy later)
+# Convert (a subset of) LaTeX input to valid Python(sympy) code
 # Display LaTeX with calculated answers inserted
 # Return LaTeX and/or Python code as a string
 
+#nextmath(st, index):
+  # checks if the string is enclosed in '$'
+
+  # st - string input from user
+  # index - st starting index
+
 def nextmath(st,i): #find next j,k>=i such that st[j:k] is inline or display math
+  # find first occurence of '$'
   j = st.find("$",i)
+  # if '$' is not found, return j=-1,k=0,d=false
   if j==-1: return (-1,0,False)
+  # check if the math string is just "$$"
   if st[j+1]=="$":
+    # set k equal to the starting index of "$$"
     k = st.find("$$",j+2)
+    # j = index after the double "$$"
+    # k = starting index of "$$"
+    # d = True (found "$$")
     return (j+2,k,True)
   else:
+    # j = index after first '$'
+    # k = index of second '$' (if there is one)
+    # d = False (did not find "$$")
     return (j+1,st.find("$",j+1),False)
+
+
+#process is called from main function
+#crates syntax tree and decides the hierarchy of functions to use first
+# process(st, info, nocolor):
+  # 
+
 
 def process(st, info=False, nocolor=False):
   # convert st (a LaTeX string) to Python/Prover9 code and evaluate it
   if st[:3]=="ls(": # use latex2sympy2 parser
     return ("" if nocolor else "\color{green}")+macros+st[3:-1]+("" if nocolor else "\color{blue}")+" = "+latex2latex(st[3:-1])
+  # 
   t=parse(st)
   if info:
     print("Abstract syntax tree:", ast(t))
@@ -730,14 +620,26 @@ def process(st, info=False, nocolor=False):
     return ("" if nocolor else "\color{green}")+macros+st
   return ("" if nocolor else "\color{green}")+macros+st+("" if nocolor else "\color{blue}")+" = "+ltx
 
-def l(st, info=False, output=False, nocolor=False):
+# l(st, info, output, nocolor)
+  # st - string input from user
+  # info - 
+  # output -
+  # nocolor - 
+
+
   # Main function to translate valid LaTeX/Markdown string st
+def l(st, info=False, output=False, nocolor=False):
+  # assuming this is used to get r""" ?
   global macros
   st = re.sub("\n%.*?\n","\n",st) #remove LaTeX comments
   st = re.sub("%.*?\n","\n",st) #remove LaTeX comments
+  # look for '$' in the string and update indices (j,k)
   (j,k,d) = nextmath(st,0)
+  # out = the first '$'
   out = st[0:j]
+  # while there are two '$'
   while j!=-1 and k!=-1:
+    # process the math equation in latex
     out += process(st[j:k],info,nocolor)
     p = k
     (j,k,d) = nextmath(st,k+(2 if d else 1))
