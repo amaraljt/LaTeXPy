@@ -306,11 +306,9 @@ def init_symbol_table():
     prefix("\\arctan",310).__repr__ =    lambda x: "sympy.atan("+str(x.a[0])+")"
 
     # testing derivatives/integrations ( NOT WORKING )
-    prefix("\\f'",310).__repr__ =    lambda x: "sympy.diff("+ str(x.a[0]) + ")"
-    prefix("\\frac{d}{dx}",310).__repr__ =    lambda x: "sympy.diff("+str(x.a[0])+")"
-    
-    # testing fractions
-    prefix2("\\frac",310).__repr__ =    lambda x: "sympy.simplify("+ str(x.a[0]) + str(x.a[1]) + ")"
+    # testing fractions using prefix2 ( how to differentiate between a fraction and derivative )
+    prefix2("\\frac",310).__repr__ =    lambda x: "sympy.simplify("+ str(x.a[0]) + "/" + str(x.a[1]) + ")"
+    #prefix2("\\frac",310).__repr__ =    lambda x: "sympy.diff("+ str(x.a[0]) + str(x.a[1]) + ")"
 
     infix("\\vert", 365).__repr__ =   lambda x: w(x,1)+"%"+w(x,0)+"==0"     # divides
     infix("\\in", 370).__repr__ =     lambda x: w(x,0)+" in "+w(x,1)        # element of
@@ -592,7 +590,7 @@ def nextmath(st,i): #find next j,k>=i such that st[j:k] is inline or display mat
 # convert st (a LaTeX string) to Python/Prover9 code and evaluate it
 # creates syntax tree and decides the hierarchy of functions to use first
 # process(st, info, nocolor):
-  # 
+  # st - string input
 
 
 def process(st, info=False, nocolor=False):
