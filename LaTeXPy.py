@@ -135,6 +135,22 @@ def nulldbr(self): # null denotation
     expr = expression()
     advance("}")
     return expr
+  
+#prefix2:
+  # \frac d{dx}(\sin x)
+  # ("\frac", "d","dx",("\sin","x"))
+def prefix2(id, bp=0): # parse n-ary prefix operations
+  global token
+  def nulld(self): # null denotation
+    # global token
+    # if token.sy not in ["(","[","{"] and self.sy not in ["\\forall","\\exists"]:
+        #print('token.sy',token.sy,'self.sy',self.sy)
+    self.a = [expression(bp), expression(bp)]
+    return self
+  s = symbol(id, bp)
+  s.nulld = nulld
+  return s
+          
 
 def prefix(id, bp=0): # parse n-ary prefix operations
     global token
@@ -281,7 +297,7 @@ def init_symbol_table():
     prefix("\\mathbb",350).__repr__ = lambda x: "_mathbb"+str(x.a[0].sy)    # blackboard bold
     prefix("\\bb",350).__repr__ =     lambda x: "_bb"+str(x.a[0].sy)        # blackboard bold
 
-    ###### testing trig functions ##### (works with one variable and no other operations inside it)
+    ###### testing trig functions #####
     prefix("\\sin",310).__repr__ =    lambda x: "sympy.sin("+str(x.a[0])+")"
     prefix("\\cos",310).__repr__ =    lambda x: "sympy.cos("+str(x.a[0])+")"
     prefix("\\tan",310).__repr__ =    lambda x: "sympy.tan("+str(x.a[0])+")"
@@ -290,8 +306,11 @@ def init_symbol_table():
     prefix("\\arctan",310).__repr__ =    lambda x: "sympy.atan("+str(x.a[0])+")"
 
     # testing derivatives/integrations ( NOT WORKING )
-    prefix("\\frac",310).__repr__ =    lambda x: "sympy.simplify("+ str(x.a[0]) + ")"
+    prefix("\\f'",310).__repr__ =    lambda x: "sympy.diff("+ str(x.a[0]) + ")"
     prefix("\\frac{d}{dx}",310).__repr__ =    lambda x: "sympy.diff("+str(x.a[0])+")"
+    
+    # testing fractions
+    prefix2("\\frac",310).__repr__ =    lambda x: "sympy.simplify("+ str(x.a[0]) + str(x.a[1]) + ")"
 
     infix("\\vert", 365).__repr__ =   lambda x: w(x,1)+"%"+w(x,0)+"==0"     # divides
     infix("\\in", 370).__repr__ =     lambda x: w(x,0)+" in "+w(x,1)        # element of
@@ -359,7 +378,7 @@ def init_symbol_table():
 init_symbol_table()
 
 # tokenize(st):
-  # 
+  # \frac{d}{dx}
 
 def tokenize(st):
     i = 0
@@ -367,7 +386,7 @@ def tokenize(st):
     while i<len(st):
         tok = st[i]
         j = i+1
-        # if 
+        # \frac{0}
         if j<len(st) and (st[j]=="{" or st[j]=="}") and tok=='\\':
           j += 1
           tok = st[i:j]
@@ -420,7 +439,7 @@ def expression(rbp=1200): # read an expression from token stream
     return left
 
 # parse(str):
-  # 
+  # \sin{}
 
 def parse(str):
     global token, next
@@ -545,7 +564,7 @@ def m4diag(li,symbols="<= v", unaryRel=""):
 # Return LaTeX and/or Python code as a string
 
 #nextmath(st, index):
-  # checks if the string is enclosed in '$'
+  # checks if the string is enclosed in '$' or '$$'
 
   # st - string input from user
   # index - st starting index
@@ -570,17 +589,17 @@ def nextmath(st,i): #find next j,k>=i such that st[j:k] is inline or display mat
     return (j+1,st.find("$",j+1),False)
 
 
-#process is called from main function
-#crates syntax tree and decides the hierarchy of functions to use first
+# convert st (a LaTeX string) to Python/Prover9 code and evaluate it
+# creates syntax tree and decides the hierarchy of functions to use first
 # process(st, info, nocolor):
   # 
 
 
 def process(st, info=False, nocolor=False):
-  # convert st (a LaTeX string) to Python/Prover9 code and evaluate it
+  # use latex2sympy2 parser if the user uses the ls() function
   if st[:3]=="ls(": # use latex2sympy2 parser
     return ("" if nocolor else "\color{green}")+macros+st[3:-1]+("" if nocolor else "\color{blue}")+" = "+latex2latex(st[3:-1])
-  # 
+  # how does this work?
   t=parse(st)
   if info:
     print("Abstract syntax tree:", ast(t))
