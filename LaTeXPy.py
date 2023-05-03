@@ -19,7 +19,7 @@
 import math, itertools, re, sys, subprocess
 subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'latex2sympy2'])
 from sympy import *
-init_session()
+x, y, z, t = symbols('x y z t') # init_session()
 from latex2sympy2 import *
 from IPython.display import *
 
@@ -146,6 +146,8 @@ def prefix2(id, bp=0): # parse n-ary prefix operations
     # if token.sy not in ["(","[","{"] and self.sy not in ["\\forall","\\exists"]:
         #print('token.sy',token.sy,'self.sy',self.sy)
     self.a = [expression(bp), expression(bp)]
+    if self.a[0].sy=="d" and self.a[1].sy[0]=="d": 
+      self.a.append(expression(bp))
     return self
   s = symbol(id, bp)
   s.nulld = nulld
@@ -297,7 +299,7 @@ def init_symbol_table():
     prefix("\\mathbb",350).__repr__ = lambda x: "_mathbb"+str(x.a[0].sy)    # blackboard bold
     prefix("\\bb",350).__repr__ =     lambda x: "_bb"+str(x.a[0].sy)        # blackboard bold
 
-    ###### testing trig functions #####
+    ###### trig functions #####
     prefix("\\sin",310).__repr__ =    lambda x: "sympy.sin("+str(x.a[0])+")"
     prefix("\\cos",310).__repr__ =    lambda x: "sympy.cos("+str(x.a[0])+")"
     prefix("\\tan",310).__repr__ =    lambda x: "sympy.tan("+str(x.a[0])+")"
@@ -307,8 +309,11 @@ def init_symbol_table():
 
     # testing derivatives/integrations ( NOT WORKING )
     # testing fractions using prefix2 ( how to differentiate between a fraction and derivative )
-    prefix2("\\frac",310).__repr__ =    lambda x: "sympy.simplify("+ str(x.a[0]) + "/" + str(x.a[1]) + ")"
-    #prefix2("\\frac",310).__repr__ =    lambda x: "sympy.diff("+ str(x.a[0]) + str(x.a[1]) + ")"
+    prefix2("\\frac",310).__repr__ =  lambda x: "latex(diff("+str(x.a[2])+","+x.a[1].sy[1:]+"))" if x.a[0].sy=="d" and x.a[1].sy[0]=="d"\
+      else "sympy.simplify("+ str(x.a[0]) + "/" + str(x.a[1]) + ")"
+      
+    ###### integrals functions #####
+    prefix("\\int",310).__repr__ =    lambda x: "sympy.integrate("+str(x.a[0])+","+x.a[1].sy[1:]+")"
 
     infix("\\vert", 365).__repr__ =   lambda x: w(x,1)+"%"+w(x,0)+"==0"     # divides
     infix("\\in", 370).__repr__ =     lambda x: w(x,0)+" in "+w(x,1)        # element of
@@ -390,7 +395,7 @@ def tokenize(st):
           tok = st[i:j]
           symbol(tok)
         elif letter(tok) or tok=='\\': #read consecutive letters or digits
-            while j<len(st) and alpha_numeric(st[j]): j+=1
+            while j<len(st) and letter(st[j]): j+=1
             tok = st[i:j]
             if tok=="\\" and j<len(st) and st[j]==" ": j+=1
             if tok=="\\text": j = st.find("}",j)+1 if st[j]=="{" else j #extend token to include {...} part
