@@ -142,16 +142,31 @@ def nulldbr(self): # null denotation
 def prefix2(id, bp=0): # parse n-ary prefix operations
   global token
   def nulld(self): # null denotation
-    # global token
-    # if token.sy not in ["(","[","{"] and self.sy not in ["\\forall","\\exists"]:
-        #print('token.sy',token.sy,'self.sy',self.sy)
     self.a = [expression(bp), expression(bp)]
     if self.a[0].sy=="d" and self.a[1].sy[0]=="d": self.a.append(expression(bp))
     return self
   s = symbol(id, bp)
   s.nulld = nulld
   return s
-          
+
+def prefix3(id, bp=0, nargs=1): # parse prefix operator \int, \lim, \sum
+  global token
+  def nulld(self): # null denotation
+    global token
+    #print('token.sy',token.sy,'self.sy',self.sy)
+    self.a = []
+    if token.sy=="_":
+      advance("_")
+      self.a += [expression(300)]
+      if token.sy=="^":
+        advance("^")
+        self.a += [expression(300)]
+    self.a = ([expression(bp)] if nargs==1 else [expression(bp), expression(bp)])+self.a
+    return self
+  s = symbol(id, bp)
+  s.nulld = nulld
+  return s
+
 def prefix(id, bp=0): # parse n-ary prefix operations
     global token
     def nulld(self): # null denotation
@@ -306,6 +321,11 @@ def init_symbol_table():
     prefix2("\\frac",310).__repr__ =  lambda x: "latex(diff("+str(x.a[2])+","+x.a[1].sy[1:]+"))" if x.a[0].sy=="d" and x.a[1].sy[0]=="d"\
       else "sympy.simplify("+ str(x.a[0]) + "/" + str(x.a[1]) + ")"
 
+    prefix3("\\int",313,2).__repr__ =   lambda x: "addplusC(integrate("+str(x.a[0])+","+x.a[1].sy[1:]+"))" if len(x.a)<=2\
+      else "latex(integrate("+str(x.a[0])+",("+x.a[1].sy[1:]+","+w(x,2)+","+w(x,3)+")))"
+    prefix3("\\lim",313).__repr__ =   lambda x: "latex(limit("+str(x.a[0])+","+x.a[1].sy[1:]+"))"
+    prefix3("\\sum",313).__repr__ =   lambda x: "latex(sum("+str(x.a[0])+","+x.a[1].sy[1:]+"))"
+
     infix("\\vert", 365).__repr__ =   lambda x: w(x,1)+"%"+w(x,0)+"==0"     # divides
     infix("\\in", 370).__repr__ =     lambda x: w(x,0)+" in "+w(x,1)        # element of
     infix("\\subseteq", 370).__repr__=lambda x: w(x,0)+" <= "+w(x,1)        # subset of
@@ -404,7 +424,7 @@ def tokenize(st):
             tok = st[i:j]
             if tok not in symbol_table: symbol(tok)
         i = j
-        if tok not in [' ','\\newline','\\ ','\n']: #skip these tokens
+        if tok not in [' ','\\newline','\\ ','\\quad','\\qquad','\n']: #skip these tokens
             symb = symbol_table[tok]
             if not symb: #symb = symbol(tok)
                 raise SyntaxError("Unknown operator")
@@ -503,6 +523,9 @@ def pyla(p,newl=False): # convert Python object to LaTeX string
   if newl and len(st)>=20: return "\\newline\n"+st
   #if newl and len(st)>=5: return " \\ "+st
   return st
+
+def addplusC(pyexpr):
+  return str(latex(pyexpr))+"+C"
 
 import networkx as nx
 from graphviz import Graph
@@ -744,7 +767,7 @@ def process(st, info=False, nocolor=False):
   try:
     val=eval(str(tt))
     if info: print("Value:", val)
-    ltx = val if str(tt)[:5]=="latex" else pyla(val)
+    ltx = val if str(tt)[:5] in ["latex","addpl"] else pyla(val)
   except:
     return ("" if nocolor else "\color{green}")+macros+st
   return ("" if nocolor else "\color{green}")+macros+st+("" if nocolor else "\color{blue}")+" = "+ltx
