@@ -1,6 +1,6 @@
 # Python program to parse LaTeX formulas and produce Python/Prover9 expressions
 
-# by Peter Jipsen 2023-3-21 distributed under LGPL 3 or later.
+# by Peter Jipsen 2023-4-6 distributed under LGPL 3 or later.
 # Terms are read using Vaughn Pratt's top-down parsing algorithm.
 
 # List of symbols handled by the parser (at this point)
@@ -19,7 +19,7 @@
 import math, itertools, re, sys, subprocess
 subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'latex2sympy2'])
 from sympy import *
-x, y, z, t = symbols('x y z t') # init_session()
+x, y, z, t = symbols('x y z t') # x, y, z, t = symbols('x y z t') # init_session()
 from latex2sympy2 import *
 from IPython.display import *
 
@@ -140,37 +140,36 @@ def nulldbr(self): # null denotation
     advance("}")
     return expr
 
-#prefix3:
-    # integration
-def prefix3(id, bp=0): # parse n-ary prefix operations
-  global token
-  def nulld(self): # null denotation
-    # global token
-    # if token.sy not in ["(","[","{"] and self.sy not in ["\\forall","\\exists"]:
-        #print('token.sy',token.sy,'self.sy',self.sy)
-    self.a = [expression(bp), expression(bp)]
-    return self
-  s = symbol(id, bp)
-  s.nulld = nulld
-  return s
-  
 #prefix2:
   # \frac d{dx}(\sin x)
   # ("\frac", "d","dx",("\sin","x"))
 def prefix2(id, bp=0): # parse n-ary prefix operations
   global token
   def nulld(self): # null denotation
-    # global token
-    # if token.sy not in ["(","[","{"] and self.sy not in ["\\forall","\\exists"]:
-        #print('token.sy',token.sy,'self.sy',self.sy)
     self.a = [expression(bp), expression(bp)]
-    if self.a[0].sy=="d" and self.a[1].sy[0]=="d": 
-      self.a.append(expression(bp))
+    if self.a[0].sy=="d" and self.a[1].sy[0]=="d": self.a.append(expression(bp))
     return self
   s = symbol(id, bp)
   s.nulld = nulld
   return s
-          
+
+def prefix3(id, bp=0, nargs=1): # parse prefix operator \int, \lim, \sum
+  global token
+  def nulld(self): # null denotation
+    global token
+    #print('token.sy',token.sy,'self.sy',self.sy)
+    self.a = []
+    if token.sy=="_":
+      advance("_")
+      self.a += [expression(300)]
+      if token.sy=="^":
+        advance("^")
+        self.a += [expression(300)]
+    self.a = ([expression(bp)] if nargs==1 else [expression(bp), expression(bp)])+self.a
+    return self
+  s = symbol(id, bp)
+  s.nulld = nulld
+  return s
 
 def prefix(id, bp=0): # parse n-ary prefix operations
     global token
@@ -317,24 +316,19 @@ def init_symbol_table():
     prefix("\\mathbb",350).__repr__ = lambda x: "_mathbb"+str(x.a[0].sy)    # blackboard bold
     prefix("\\bb",350).__repr__ =     lambda x: "_bb"+str(x.a[0].sy)        # blackboard bold
 
-    ###### trig functions #####
     prefix("\\sin",310).__repr__ =    lambda x: "sympy.sin("+str(x.a[0])+")"
     prefix("\\cos",310).__repr__ =    lambda x: "sympy.cos("+str(x.a[0])+")"
     prefix("\\tan",310).__repr__ =    lambda x: "sympy.tan("+str(x.a[0])+")"
-    prefix("\\arcsin",310).__repr__ =    lambda x: "sympy.asin("+str(x.a[0])+")"
-    prefix("\\arccos",310).__repr__ =    lambda x: "sympy.acos("+str(x.a[0])+")"
-    prefix("\\arctan",310).__repr__ =    lambda x: "sympy.atan("+str(x.a[0])+")"
-
-    # testing derivatives/integrations
-    # testing fractions using prefix2 ( how to differentiate between a fraction and derivative )
+    prefix("\\arcsin",310).__repr__ = lambda x: "sympy.asin("+str(x.a[0])+")"
+    prefix("\\arccos",310).__repr__ = lambda x: "sympy.acos("+str(x.a[0])+")"
+    prefix("\\arctan",310).__repr__ = lambda x: "sympy.atan("+str(x.a[0])+")"
     prefix2("\\frac",310).__repr__ =  lambda x: "latex(diff("+str(x.a[2])+","+x.a[1].sy[1:]+"))" if x.a[0].sy=="d" and x.a[1].sy[0]=="d"\
       else "sympy.simplify("+ str(x.a[0]) + "/" + str(x.a[1]) + ")"
 
-    prefix3("\\int",310).__repr__ =    lambda x: "latex(integrate("+str(x.a[0])+","+x.a[1].sy[1:]+"))"
-    prefix3("\\int_",310).__repr__ =    lambda x: "latex(sympy.integrate("+str(x.a[0])+","+x.a[1].sy[1:]+"))"
-    
-    ###### limit functions #####
-    prefix3("\\lim_",310).__repr__ =    lambda x: "latex(limit("+str(x.a[0])+","+x.a[1].sy[1:]+")"
+    prefix3("\\int",313,2).__repr__ =   lambda x: "addplusC(integrate("+str(x.a[0])+","+x.a[1].sy[1:]+"))" if len(x.a)<=2\
+      else "latex(integrate("+str(x.a[0])+",("+x.a[1].sy[1:]+","+w(x,2)+","+w(x,3)+")))"
+    prefix3("\\lim",313).__repr__ =   lambda x: "latex(limit("+str(x.a[0])+","+x.a[1].sy[1:]+"))"
+    prefix3("\\sum",313).__repr__ =   lambda x: "latex(sum("+str(x.a[0])+","+x.a[1].sy[1:]+"))"
 
     infix("\\vert", 365).__repr__ =   lambda x: w(x,1)+"%"+w(x,0)+"==0"     # divides
     infix("\\in", 370).__repr__ =     lambda x: w(x,0)+" in "+w(x,1)        # element of
@@ -416,16 +410,9 @@ def tokenize(st):
           j += 1
           tok = st[i:j]
           symbol(tok)
-        elif letter(tok) or tok=='\\': #found a backslash for function
-            print("I AM IN HERE2")
-            while j<len(st) and letter(st[j]): j+=1 #iterate j till the end of the function
-            tok = st[i:j] #store the token from i to j i.e. \lim
-            if tok=="\\lim": 
-              if st[j] == "_":
-                j+=1
-            if tok=="\\int": 
-              if st[j] == "_":
-                j+=1
+        elif letter(tok) or tok=='\\': #read consecutive letters or digits
+            while j<len(st) and letter(st[j]): j+=1
+            tok = st[i:j]
             if tok=="\\" and j<len(st) and st[j]==" ": j+=1
             if tok=="\\text": j = st.find("}",j)+1 if st[j]=="{" else j #extend token to include {...} part
             if tok=="\\s": j = st.find("}",j)+1 if st[j]=="{" else j
@@ -449,8 +436,7 @@ def tokenize(st):
             tok = st[i:j]
             if tok not in symbol_table: symbol(tok)
         i = j
-        if tok not in [' ','\\newline','\\ ','\n']: #skip these tokens
-            print("I AM IN HERE5")
+        if tok not in [' ','\\newline','\\ ','\\quad','\\qquad','\n']: #skip these tokens
             symb = symbol_table[tok]
             if not symb: #symb = symbol(tok)
                 raise SyntaxError("Unknown operator")
@@ -552,6 +538,9 @@ def pyla(p,newl=False): # convert Python object to LaTeX string
   if newl and len(st)>=20: return "\\newline\n"+st
   #if newl and len(st)>=5: return " \\ "+st
   return st
+
+def addplusC(pyexpr):
+  return str(latex(pyexpr))+"+C"
 
 import networkx as nx
 from graphviz import Graph
@@ -667,7 +656,7 @@ def process(st, info=False, nocolor=False):
   try:
     val=eval(str(tt))
     if info: print("Value:", val)
-    ltx = val if str(tt)[:5]=="latex" else pyla(val)
+    ltx = val if str(tt)[:5] in ["latex","addpl"] else pyla(val)
   except:
     return ("" if nocolor else "\color{green}")+macros+st
   return ("" if nocolor else "\color{green}")+macros+st+("" if nocolor else "\color{blue}")+" = "+ltx
