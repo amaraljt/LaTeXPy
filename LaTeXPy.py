@@ -406,7 +406,6 @@ def tokenize(st):
         j = i+1
         # \lim_
         if j<len(st) and (st[j]=="{" or st[j]=="}") and tok=='\\':
-          print("I AM IN HERE1")
           j += 1
           tok = st[i:j]
           symbol(tok)
@@ -423,14 +422,12 @@ def tokenize(st):
             symbol(tok)
             if j<len(st) and st[j]=='(': prefix(tok, 1200) #promote tok to function
         elif "0"<=tok<="9": #read (decimal) number in scientific notation
-            print("I AM IN HERE3")
             while j<len(st) and ('0'<=st[j]<='9' or st[j]=='.'):# in ['.','e','E','-']):
                 j+=1
             tok = st[i:j]
             symbol(tok)
         elif tok =="-" and st[j]=="-": pass
         elif tok not in " '(,)[]{}\\|\n": #read operator string
-            print("I AM IN HERE4")
             while j<len(st) and not alpha_numeric(st[j]) and \
                   st[j] not in " '(,)[]{}\\\n": j+=1
             tok = st[i:j]
