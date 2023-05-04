@@ -75,6 +75,10 @@ import math, itertools, re
 _pi = sympy.pi
 _e = math.e
 
+def integrate2(a, b):
+    return str(integrate(a, b) + "+ C")
+
+
 def is_postfix(t):
     return hasattr(t,'leftd') and len(t.a)==1
 
@@ -135,6 +139,20 @@ def nulldbr(self): # null denotation
     expr = expression()
     advance("}")
     return expr
+
+#prefix3:
+    # integration
+def prefix3(id, bp=0): # parse n-ary prefix operations
+  global token
+  def nulld(self): # null denotation
+    # global token
+    # if token.sy not in ["(","[","{"] and self.sy not in ["\\forall","\\exists"]:
+        #print('token.sy',token.sy,'self.sy',self.sy)
+    self.a = [expression(bp), expression(bp)]
+    return self
+  s = symbol(id, bp)
+  s.nulld = nulld
+  return s
   
 #prefix2:
   # \frac d{dx}(\sin x)
@@ -307,13 +325,16 @@ def init_symbol_table():
     prefix("\\arccos",310).__repr__ =    lambda x: "sympy.acos("+str(x.a[0])+")"
     prefix("\\arctan",310).__repr__ =    lambda x: "sympy.atan("+str(x.a[0])+")"
 
-    # testing derivatives/integrations ( NOT WORKING )
+    # testing derivatives/integrations
     # testing fractions using prefix2 ( how to differentiate between a fraction and derivative )
     prefix2("\\frac",310).__repr__ =  lambda x: "latex(diff("+str(x.a[2])+","+x.a[1].sy[1:]+"))" if x.a[0].sy=="d" and x.a[1].sy[0]=="d"\
       else "sympy.simplify("+ str(x.a[0]) + "/" + str(x.a[1]) + ")"
-      
-    ###### integrals functions #####
-    prefix("\\int",310).__repr__ =    lambda x: "sympy.integrate("+str(x.a[0])+","+x.a[1].sy[1:]+")"
+
+    prefix3("\\int",310).__repr__ =    lambda x: "latex(integrate("+str(x.a[0])+","+x.a[1].sy[1:]+"))"
+    prefix3("\\int_",310).__repr__ =    lambda x: "latex(sympy.integrate("+str(x.a[0])+","+x.a[1].sy[1:]+"))"
+    
+    ###### limit functions #####
+    prefix3("\\lim_",310).__repr__ =    lambda x: "latex(limit("+str(x.a[0])+","+x.a[1].sy[1:]+")"
 
     infix("\\vert", 365).__repr__ =   lambda x: w(x,1)+"%"+w(x,0)+"==0"     # divides
     infix("\\in", 370).__repr__ =     lambda x: w(x,0)+" in "+w(x,1)        # element of
@@ -389,14 +410,22 @@ def tokenize(st):
     while i<len(st):
         tok = st[i]
         j = i+1
-        # \frac{0}
+        # \lim_
         if j<len(st) and (st[j]=="{" or st[j]=="}") and tok=='\\':
+          print("I AM IN HERE1")
           j += 1
           tok = st[i:j]
           symbol(tok)
-        elif letter(tok) or tok=='\\': #read consecutive letters or digits
-            while j<len(st) and letter(st[j]): j+=1
-            tok = st[i:j]
+        elif letter(tok) or tok=='\\': #found a backslash for function
+            print("I AM IN HERE2")
+            while j<len(st) and letter(st[j]): j+=1 #iterate j till the end of the function
+            tok = st[i:j] #store the token from i to j i.e. \lim
+            if tok=="\\lim": 
+              if st[j] == "_":
+                j+=1
+            if tok=="\\int": 
+              if st[j] == "_":
+                j+=1
             if tok=="\\" and j<len(st) and st[j]==" ": j+=1
             if tok=="\\text": j = st.find("}",j)+1 if st[j]=="{" else j #extend token to include {...} part
             if tok=="\\s": j = st.find("}",j)+1 if st[j]=="{" else j
@@ -407,18 +436,21 @@ def tokenize(st):
             symbol(tok)
             if j<len(st) and st[j]=='(': prefix(tok, 1200) #promote tok to function
         elif "0"<=tok<="9": #read (decimal) number in scientific notation
+            print("I AM IN HERE3")
             while j<len(st) and ('0'<=st[j]<='9' or st[j]=='.'):# in ['.','e','E','-']):
                 j+=1
             tok = st[i:j]
             symbol(tok)
         elif tok =="-" and st[j]=="-": pass
         elif tok not in " '(,)[]{}\\|\n": #read operator string
+            print("I AM IN HERE4")
             while j<len(st) and not alpha_numeric(st[j]) and \
                   st[j] not in " '(,)[]{}\\\n": j+=1
             tok = st[i:j]
             if tok not in symbol_table: symbol(tok)
         i = j
         if tok not in [' ','\\newline','\\ ','\n']: #skip these tokens
+            print("I AM IN HERE5")
             symb = symbol_table[tok]
             if not symb: #symb = symbol(tok)
                 raise SyntaxError("Unknown operator")
@@ -596,8 +628,6 @@ def nextmath(st,i): #find next j,k>=i such that st[j:k] is inline or display mat
 # creates syntax tree and decides the hierarchy of functions to use first
 # process(st, info, nocolor):
   # st - string input
-
-
 def process(st, info=False, nocolor=False):
   # use latex2sympy2 parser if the user uses the ls() function
   if st[:3]=="ls(": # use latex2sympy2 parser
