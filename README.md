@@ -1,9 +1,6 @@
 # LaTeXPy
 
-### Group Members
-Jared Amaral, Jose Arellano, Nathan Nguyen, Alex Wunderli
-
-
+## Introduction
 The aim of this project is to use LaTeX as a high-level mathematical calculator syntax 
 that can be used in undergraduate education by students who know or learn some basic LaTeX, 
 but they should not need to know any Python.
@@ -14,6 +11,17 @@ Python and the resulting value (if any) is inserted into the LaTeX file. If the 
 is an assignment, the value of the right hand side is assigned to a Python variable with
 a similar name and can be used in subsequent LaTeX expressions.
 
+## Group Members
+Jared Amaral, Jose Arellano, Nathan Nguyen, Alex Wunderli
+
+## Contributions
+- Nathan Nguyen: 
+  * README formatting
+- Jared Amaral
+  * Added coherent documentation
+  * Implemented fractions, trig functions, and limits
+
+## Setup Instructions
 It is recommended to use this code in a Colab Jupyter notebook freely available at 
 https://colab.research.google.com (use a free gmail account to login to Colab).
 
@@ -31,46 +39,13 @@ The main function of the code is called `l(...)` and takes a LaTeX **r"""raw str
 
 Below are some example of what is covered (can be copy-pasted as input ). A **question mark** after an expression is a request to evaluate the expression and insert the result in the typeset output (colored **blue**). Expressions with a **top-level equal sign and a variable on the left** are interpreted as assignments that get executed by Python. Input that was parsed and evaluated without error appears in **green**, and all other expressions (without ? or =, or that generated errors) as well as text outside of $...$ math regions appear in black.
 
+## Examples
 ```
 l(r"""
 Here we are using the l(...) command which requires $...$ to surround math expressions.
 
 Arithmetic expressions are written in calculator style, e.g., $1+2\cdot 4/4^2 ?$. 
 The '?' indicates that the answer should be inserted in the typeset output.
-""")
-```
-
-```
-l(r"""
-Sets are finite and can contain numbers, unevaluated expressions and 
-other (finite) sets e.g., $A=\{2,a,b,\gamma,\delta\}?$.
-
-Standard set-operations are available: $A\cap \{1,2,3,b\}?$, $A\cup \{1,2,3,b\}?$, 
-$A\setminus \{1,2,3,b\}?$, $A\oplus \{1,2,3,b\}?$.
-""")
-```
-
-```
-l(r"""
-Ranges $\{3,\dots,10\}?$, cartesian product $\{1,2,3\}\times\{a,b\}?$.
-
-Powerset $P=\mathcal{P}(\{1,2,3,4\})?$ 
-
-Cardinality $|P|?$
-
-A lattice of subsets can be displayed using $show(P)$ (it is shown before the rest of the output).
-""")
-```
-
-```
-l(r"""
-Lists use [...] syntax: $L=[a,b,c]$ and subscripts access elements. 
-The first element is $L_0?$, and if $i=2$ then $L_i?$.
-
-Tuples use \tup{...} syntax: $u=\tup{a,b,c}?$ and again subscripts are used to access elements. 
-The last element is $u_{-1}?$, and if $i=1$ then $u_i?$.
-
-(Note: using v as a variable is a bug since it is interpreted as join (in Prover9). This needs to be fixed)
 """)
 ```
 
@@ -94,7 +69,7 @@ The following design principles are part of this project:
 2. Input and output can be copy-pasted from and to standard LaTeX documents.
 3. LaTeXPy is intended to be used in a Jupyter notebook environment. It makes use of the display module (for LaTeX and Markdown) and the graphviz module (for graphs and Hasse diagrams).
 4. The parser does not require a parser generator. Local modifications and extensions should be fairly easy to make for someone familiar with Python. Currently the `latex2sympy2` package is also used.
-5. The LaTeX interface connects with automated theorem provers and model finders (currently Prover9/Mace4). Future syntax extensions may include other automated provers and SMT-solvers.
+5. The LaTeX interface connects with automated theorem provers and model finders (currently Prover9/Mace4). Future syntax extensions may include other automated provers and SMT-solvers. *NOTE: This version of LaTeXPy does not implement model finders, Prover9 due to dependency issues.
 
 The current version of LaTeXPy.py is experimental and intended to get feedback on design decisions.
 The input language covers an interesting fragment of discrete mathematics (including finite sets, first-order logic and some `SymPy` functionality), but the syntax is still evolving and incorrect input currently does not 

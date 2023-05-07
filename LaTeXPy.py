@@ -73,7 +73,6 @@ def pr9(assume_list, goal_list, mace_seconds=2, prover_seconds=60, cardinality=N
 from IPython.display import *
 import math, itertools, re
 _pi = sympy.pi
-# _infty = oo
 _e = math.e
 
 def integrate2(a, b):
@@ -652,14 +651,14 @@ def process(st, info=False, nocolor=False):
     except:
       if info: print("no result")
       return macros+st
-    return ("" if nocolor else "\color{green}")+macros+st+("" if nocolor else "\color{blue}")+" = "+pyla(eval(str(tt.a[0])))
+    return ("" if nocolor else "\color{green}")+macros+st+("" if nocolor else "\color{deepskyblue}")+" = "+pyla(eval(str(tt.a[0])))
   try:
     val=eval(str(tt))
     if info: print("Value:", val)
     ltx = val if str(tt)[:5] in ["latex","addpl"] else pyla(val)
   except:
     return ("" if nocolor else "\color{green}")+macros+st
-  return ("" if nocolor else "\color{green}")+macros+st+("" if nocolor else "\color{blue}")+" = "+ltx
+  return ("" if nocolor else "\color{green}")+macros+st+("" if nocolor else "\color{deepskyblue}")+" = "+ltx
 
 # l(st, info, output, nocolor)
   # st - string input from user
