@@ -19,7 +19,7 @@
 import math, itertools, re, sys, subprocess
 subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'latex2sympy2'])
 from sympy import *
-x, y, z, t = symbols('x y z t') # x, y, z, t = symbols('x y z t') # init_session()
+x, y, z, t, i, n, m = symbols('x y z t i n m') # x, y, z, t = symbols('x y z t') # init_session()
 from latex2sympy2 import *
 from IPython.display import *
 
@@ -73,6 +73,7 @@ def pr9(assume_list, goal_list, mace_seconds=2, prover_seconds=60, cardinality=N
 from IPython.display import *
 import math, itertools, re
 _pi = sympy.pi
+# _infty = oo
 _e = math.e
 
 def integrate2(a, b):
@@ -316,19 +317,21 @@ def init_symbol_table():
     prefix("\\mathbb",350).__repr__ = lambda x: "_mathbb"+str(x.a[0].sy)    # blackboard bold
     prefix("\\bb",350).__repr__ =     lambda x: "_bb"+str(x.a[0].sy)        # blackboard bold
 
-    prefix("\\sin",310).__repr__ =    lambda x: "sympy.sin("+str(x.a[0])+")"
-    prefix("\\cos",310).__repr__ =    lambda x: "sympy.cos("+str(x.a[0])+")"
-    prefix("\\tan",310).__repr__ =    lambda x: "sympy.tan("+str(x.a[0])+")"
-    prefix("\\arcsin",310).__repr__ = lambda x: "sympy.asin("+str(x.a[0])+")"
-    prefix("\\arccos",310).__repr__ = lambda x: "sympy.acos("+str(x.a[0])+")"
-    prefix("\\arctan",310).__repr__ = lambda x: "sympy.atan("+str(x.a[0])+")"
+    prefix("\\sin",310).__repr__ =    lambda x: "sin("+str(x.a[0])+")"
+    prefix("\\cos",310).__repr__ =    lambda x: "cos("+str(x.a[0])+")"
+    prefix("\\tan",310).__repr__ =    lambda x: "tan("+str(x.a[0])+")"
+    prefix("\\arcsin",310).__repr__ = lambda x: "asin("+str(x.a[0])+")"
+    prefix("\\arccos",310).__repr__ = lambda x: "acos("+str(x.a[0])+")"
+    prefix("\\arctan",310).__repr__ = lambda x: "atan("+str(x.a[0])+")"
     prefix2("\\frac",310).__repr__ =  lambda x: "latex(diff("+str(x.a[2])+","+x.a[1].sy[1:]+"))" if x.a[0].sy=="d" and x.a[1].sy[0]=="d"\
       else "sympy.simplify("+ str(x.a[0]) + "/" + str(x.a[1]) + ")"
 
     prefix3("\\int",313,2).__repr__ =   lambda x: "addplusC(integrate("+str(x.a[0])+","+x.a[1].sy[1:]+"))" if len(x.a)<=2\
       else "latex(integrate("+str(x.a[0])+",("+x.a[1].sy[1:]+","+w(x,2)+","+w(x,3)+")))"
-    prefix3("\\lim",313).__repr__ =   lambda x: "latex(limit("+str(x.a[0])+","+x.a[1].sy[1:]+"))"
-    prefix3("\\sum",313).__repr__ =   lambda x: "latex(sum("+str(x.a[0])+","+x.a[1].sy[1:]+"))"
+    
+    prefix3("\\lim",313).__repr__ =   lambda x: "latex(limit("+str(x.a[0])+", "+ str(x.a[1].a[0])+", "+str(x.a[1].a[1])+"))" 
+
+    prefix3("\\sum",313).__repr__ =   lambda x: "latex(summation("+str(x.a[0])+", ("+str(x.a[0])+","+str(x.a[1].a[1])+","+str(x.a[2])+")))"
 
     infix("\\vert", 365).__repr__ =   lambda x: w(x,1)+"%"+w(x,0)+"==0"     # divides
     infix("\\in", 370).__repr__ =     lambda x: w(x,0)+" in "+w(x,1)        # element of
