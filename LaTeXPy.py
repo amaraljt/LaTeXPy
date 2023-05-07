@@ -26,18 +26,18 @@ from IPython.display import *
 # The macros below are used to simplify the input that needs to be typed.
 macros=r"""
 \renewcommand{\And}{\ \text{and}\ }
-\renewcommand{\Or}{\ \text{or}\ }
-\renewcommand{\Not}{\text{not}\ }
-\renewcommand{\m}{\mathbf}
-\renewcommand{\bb}{\mathbb}
-\renewcommand{\cc}{\mathcal}
-\renewcommand{\s}{\text}
-\renewcommand{\bsl}{\backslash}
-\renewcommand{\sm}{{\sim}}
-\renewcommand{\tup}[1]{(#1)}
-\renewcommand{\Mod}{\text{Mod}}
-\renewcommand{\Con}{\text{Con}}
-\renewcommand{\Pre}{\text{Pre}}
+\newcommand{\Or}{\ \text{or}\ }
+\newcommand{\Not}{\text{not}\ }
+\newcommand{\m}{\mathbf}
+\newcommand{\bb}{\mathbb}
+\newcommand{\cc}{\mathcal}
+\newcommand{\s}{\text}
+\newcommand{\bsl}{\backslash}
+\newcommand{\sm}{{\sim}}
+\newcommand{\tup}[1]{(#1)}
+\newcommand{\Mod}{\text{Mod}}
+\newcommand{\Con}{\text{Con}}
+\newcommand{\Pre}{\text{Pre}}
 """
 display(Markdown("$"+macros+"$"))
 RunningInCOLAB = 'google.colab' in str(get_ipython())

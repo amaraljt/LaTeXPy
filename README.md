@@ -37,6 +37,7 @@ Here we are using the l(...) command which requires $...$ to surround math expre
 
 Arithmetic expressions are written in calculator style, e.g., $1+2\cdot 4/4^2 ?$. 
 The '?' indicates that the answer should be inserted in the typeset output.
+""")
 ```
 
 ```
@@ -46,6 +47,7 @@ other (finite) sets e.g., $A=\{2,a,b,\gamma,\delta\}?$.
 
 Standard set-operations are available: $A\cap \{1,2,3,b\}?$, $A\cup \{1,2,3,b\}?$, 
 $A\setminus \{1,2,3,b\}?$, $A\oplus \{1,2,3,b\}?$.
+""")
 ```
 
 ```
@@ -57,6 +59,7 @@ Powerset $P=\mathcal{P}(\{1,2,3,4\})?$
 Cardinality $|P|?$
 
 A lattice of subsets can be displayed using $show(P)$ (it is shown before the rest of the output).
+""")
 ```
 
 ```
