@@ -72,7 +72,7 @@ The '?' indicates that the answer should be inserted in the typeset output.
 """)
 ```
 
-**More examples** can be found by going to this following [link](https://colab.research.google.com/drive/1GxquIfefMr7ifbUvcZKuXEK1ulIDkb4n?usp=sharing) to a notebook on google collab that details examples of functionality implemented by our team. The same examples can also be found in the test.ipynb file in this repository (presented as self-contained Jupyter notebooks; just copy the whole notebook and upload it into a Colab notebook at https://colab.research.google.com).
+**More examples** can be found by going to this following [link](https://colab.research.google.com/drive/1Ngd4wNIEkw5jjAjwxavwV5PybXkWFRb0?usp=sharing) to a notebook on google collab that details examples of functionality implemented by our team. The same examples can also be found in the test.ipynb file in this repository (presented as self-contained Jupyter notebooks; just copy the whole notebook and upload it into a Colab notebook at https://colab.research.google.com).
 
 
 The following design principles are part of this project:
