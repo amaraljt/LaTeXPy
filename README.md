@@ -1,6 +1,8 @@
 # LaTeXPy
 
 ## Introduction
+Latex is utilized in mathematics, physics, economics, and more as the leading text formatting language for typesetting mathematics. The interest for language lies mostly for those who wish to type mathematics in a formal, simple and clean method, allowing others to easily see documents related to math easily and clearly. Current versions of Latex, however, cannot perform operations within text, which would a useful function for calculating mathematical expressions while typsetting instead of going onto an external site. Our project extends Dr. Peter Jipsen's project and current work with the LatexPy program, and includes functiolaity seen in Calculus, such as derivatives, sums, inetgrals, and trigometric functions. 
+
 The aim of this project is to use LaTeX as a high-level mathematical calculator syntax 
 that can be used in undergraduate education by students who know or learn some basic LaTeX, 
 but they should not need to know any Python.
@@ -17,6 +19,7 @@ Jared Amaral, Jose Arellano, Nathan Nguyen, Alex Wunderli
 ## Contributions
 - Nathan Nguyen: 
   * README formatting
+  * Added extra documention in code
 - Jared Amaral
   * Added coherent documentation
   * Implemented fractions, trig functions, and limits
@@ -74,3 +77,6 @@ The following design principles are part of this project:
 The current version of LaTeXPy.py is experimental and intended to get feedback on design decisions.
 The input language covers an interesting fragment of discrete mathematics (including finite sets, first-order logic and some `SymPy` functionality), but the syntax is still evolving and incorrect input currently does not 
 produce useful error messages.
+
+## References
+This project is forked from Dr. Peter Jipsen's repository. Some of the code is credited and attributed to him. Since our respository is an experimental project with errors, please see his repository for fully working functionaility. 
