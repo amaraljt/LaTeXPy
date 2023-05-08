@@ -64,7 +64,7 @@ $\{x\in A\mid x\ne 1\And\forall {y\in A, y\vert x\implies y=1\Or y=x}\}?$
 """)
 ```
 
-**More examples** can be found in the Examples folder (presented as self-contained Jupyter notebooks; just copy the whole notebook and upload it into a Colab notebook at https://colab.research.google.com).
+**More examples** can be found in the test.ipynb file (presented as self-contained Jupyter notebooks; just copy the whole notebook and upload it into a Colab notebook at https://colab.research.google.com).
 
 The following design principles are part of this project:
 

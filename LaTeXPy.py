@@ -3,6 +3,8 @@
 # by Peter Jipsen 2023-4-6 distributed under LGPL 3 or later.
 # Terms are read using Vaughn Pratt's top-down parsing algorithm.
 
+# Modified by Jared Amaral, Jose Arellano, Nathan Nguyen, Alex Wunderli in May 2023 for usage in their Algorithm Analysis course project. 
+
 # List of symbols handled by the parser (at this point)
 # =====================================================
 # \And \approx \backslash \bb \bigcap \bigcup \bot \cap \cc \cdot  
@@ -59,6 +61,7 @@ def p9st(t):
   P9=True;ps=str(t);P9=False
   return ps
 
+# Prover 9 Function
 def pr9(assume_list, goal_list, mace_seconds=2, prover_seconds=60, cardinality=None, params='', info=False):
     global prover9
     if type(cardinality) == int or cardinality == None:
@@ -70,15 +73,17 @@ def pr9(assume_list, goal_list, mace_seconds=2, prover_seconds=60, cardinality=N
         print("Fine spectrum: ", [len(x) for x in algs[1:]])
         return algs
 
+# Setting pi and e constants
 from IPython.display import *
 import math, itertools, re
 _pi = sympy.pi
 _e = math.e
 
+# Integration Function
 def integrate2(a, b):
     return str(integrate(a, b) + "+ C")
 
-
+# Postfic check function
 def is_postfix(t):
     return hasattr(t,'leftd') and len(t.a)==1
 
@@ -89,6 +94,7 @@ def w(t,i): # decide when to add parentheses during printing of terms
         (not hasattr(subt,'leftd') or not hasattr(t,'leftd')) or \
         (is_postfix(subt) and is_postfix(t)) else "("+str(subt)+")"
 
+# Similar to w function but modified for calculus functions
 def w2(t,i):
   subt = t.a[i] if len(t.a)>i else "index out of range"
   return str(subt) if subt.lbp < t.lbp or subt.a==[] \
@@ -99,9 +105,11 @@ def w3(t,i): # always add parentheses
   subt = t.a[i] if len(t.a)>i else "index out of range"
   return "("+str(subt)+")"
 
+# Creates arbitrary constant C (for integration) 
 def letter(c): return 'a'<=c<='z' or 'A'<=c<='Z'
 def alpha_numeric(c): return 'a'<=c<='z' or 'A'<=c<='Z' or '0'<=c<='9'
 
+# Base Symbol Class
 class symbol_base(object):
     a = []
     def __repr__(self): 
@@ -111,6 +119,7 @@ class symbol_base(object):
         else:
          return self.sy+"("+",".join([w(self,j) for j in range(len(self.a))])+")"
 
+# Symbol Function
 def symbol(id, bp=1200): # identifier, binding power; LOWER binds stronger
     if id in symbol_table:
         s = symbol_table[id]    # look symbol up in table
@@ -143,6 +152,8 @@ def nulldbr(self): # null denotation
 #prefix2:
   # \frac d{dx}(\sin x)
   # ("\frac", "d","dx",("\sin","x"))
+
+# Prefix2 is utilized for differentiation
 def prefix2(id, bp=0): # parse n-ary prefix operations
   global token
   def nulld(self): # null denotation
@@ -153,6 +164,7 @@ def prefix2(id, bp=0): # parse n-ary prefix operations
   s.nulld = nulld
   return s
 
+# Prefix3 is utilized for integration, limits, and summation
 def prefix3(id, bp=0, nargs=1): # parse prefix operator \int, \lim, \sum
   global token
   def nulld(self): # null denotation
@@ -171,6 +183,7 @@ def prefix3(id, bp=0, nargs=1): # parse prefix operator \int, \lim, \sum
   s.nulld = nulld
   return s
 
+# General prefix function for general mathematics functions
 def prefix(id, bp=0): # parse n-ary prefix operations
     global token
     def nulld(self): # null denotation
@@ -207,6 +220,7 @@ def prefix(id, bp=0): # parse n-ary prefix operations
     s.nulld = nulld
     return s
 
+# Determines infix
 def infix(id, bp, right=False):
     def leftd(self, left): # left denotation
         self.a = [left]
@@ -216,6 +230,7 @@ def infix(id, bp, right=False):
     s.leftd = leftd
     return s
 
+# Determines whether expression is pre or infix
 def preorinfix(id, bp, right=True): # used for minus
     def leftd(self, left): # left denotation
         self.a = [left]
@@ -246,6 +261,7 @@ def plist(id, bp=0): #parse a parenthesized comma-separated list
     s.nulld = nulld
     return s
 
+# Postfix is utilized for postfix expressions
 def postfix(id, bp):
     def leftd(self,left): # left denotation
         self.a = [left]
@@ -254,11 +270,13 @@ def postfix(id, bp):
     s.leftd = leftd
     return s
 
+# Symbol table dictionary
 symbol_table = {}
 
 # The parsing rules  below decode a string of tokens into an abstract syntax tree with methods .sy 
 # for symbol (a string) and .a for arguments.
 
+# Intializes table of mathematical symbols, utilizes lamba calculus
 def init_symbol_table():
     global symbol_table
     symbol_table = {}
@@ -315,22 +333,33 @@ def init_symbol_table():
     prefix("\\m",350).__repr__ =      lambda x: "_m"+str(x.a[0].sy)         # algebra or structure or theory
     prefix("\\mathbb",350).__repr__ = lambda x: "_mathbb"+str(x.a[0].sy)    # blackboard bold
     prefix("\\bb",350).__repr__ =     lambda x: "_bb"+str(x.a[0].sy)        # blackboard bold
+    #############
+    # BELOW ARE WHAT FUNCTIONS WERE IMPLEMENTED BY Jared Amaral, Jose Arellano, Nathan Nguyen, Alex Wunderli 
 
+    # Trignometic Functions
     prefix("\\sin",310).__repr__ =    lambda x: "sin("+str(x.a[0])+")"
     prefix("\\cos",310).__repr__ =    lambda x: "cos("+str(x.a[0])+")"
     prefix("\\tan",310).__repr__ =    lambda x: "tan("+str(x.a[0])+")"
     prefix("\\arcsin",310).__repr__ = lambda x: "asin("+str(x.a[0])+")"
     prefix("\\arccos",310).__repr__ = lambda x: "acos("+str(x.a[0])+")"
     prefix("\\arctan",310).__repr__ = lambda x: "atan("+str(x.a[0])+")"
+
+    # Differentation
     prefix2("\\frac",310).__repr__ =  lambda x: "latex(diff("+str(x.a[2])+","+x.a[1].sy[1:]+"))" if x.a[0].sy=="d" and x.a[1].sy[0]=="d"\
       else "sympy.simplify("+ str(x.a[0]) + "/" + str(x.a[1]) + ")"
 
+    # Integration
     prefix3("\\int",313,2).__repr__ =   lambda x: "addplusC(integrate("+str(x.a[0])+","+x.a[1].sy[1:]+"))" if len(x.a)<=2\
       else "latex(integrate("+str(x.a[0])+",("+x.a[1].sy[1:]+","+w(x,2)+","+w(x,3)+")))"
     
+    # Limits
     prefix3("\\lim",313).__repr__ =   lambda x: "latex(limit("+str(x.a[0])+", "+ str(x.a[1].a[0])+", "+str(x.a[1].a[1])+"))" 
 
+    # Summation
     prefix3("\\sum",313).__repr__ =   lambda x: "latex(summation("+str(x.a[0])+", ("+str(x.a[0])+","+str(x.a[1].a[1])+","+str(x.a[2])+")))"
+
+    # RETURNS TO PETER JIPSEN'S CODE
+    #########
 
     infix("\\vert", 365).__repr__ =   lambda x: w(x,1)+"%"+w(x,0)+"==0"     # divides
     infix("\\in", 370).__repr__ =     lambda x: w(x,0)+" in "+w(x,1)        # element of
@@ -400,6 +429,7 @@ init_symbol_table()
 # tokenize(st):
   # \frac{d}{dx}
 
+# Determines tokens from an expression
 def tokenize(st):
     i = 0
     # loop the length of the string
@@ -461,6 +491,7 @@ def expression(rbp=1200): # read an expression from token stream
 # parse(str):
   # \sin{}
 
+# Parser of expressions
 def parse(str):
     global token, next
     next = tokenize(str).__next__
@@ -541,6 +572,7 @@ def pyla(p,newl=False): # convert Python object to LaTeX string
 def addplusC(pyexpr):
   return str(latex(pyexpr))+"+C"
 
+# Below are functions and imports utilized for visual outputting and formatting in latex
 import networkx as nx
 from graphviz import Graph
 from IPython.display import display_html
