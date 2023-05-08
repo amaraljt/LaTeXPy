@@ -1,7 +1,7 @@
 # LaTeXPy
 
 ## Introduction
-Latex is utilized in mathematics, physics, economics, and more as the leading text formatting language for typesetting mathematics. The interest for language lies mostly for those who wish to type mathematics in a formal, simple and clean method, allowing others to easily see documents related to math easily and clearly. Current versions of Latex, however, cannot perform operations within text, which would a useful function for calculating mathematical expressions while typsetting instead of going onto an external site. Our project extends Dr. Peter Jipsen's project and current work with the LatexPy program, and includes functiolaity seen in Calculus, such as derivatives, summations, integrals, limits, and trigometric functions. 
+Latex is utilized in mathematics, physics, economics, and more as the leading text formatting language for typesetting mathematics. The interest for language lies mostly for those who wish to type mathematics in a formal, simple and clean method, allowing others to easily see documents related to math easily and clearly. Current versions of Latex, however, cannot perform operations within text, which would a useful function for calculating mathematical expressions while typsetting instead of going onto an external site. Our project extends Dr. Peter Jipsen's project and current work with the LatexPy program, and includes functionality seen in Calculus, such as derivatives, summations, integrals, limits, and trigometric functions. 
 
 The aim of this project is to use LaTeX as a high-level mathematical calculator syntax 
 that can be used in undergraduate education by students who know or learn some basic LaTeX, 
@@ -12,6 +12,8 @@ by $ or $$) and (attempts to) translate them to valid Python code. This code is 
 Python and the resulting value (if any) is inserted into the LaTeX file. If the math expression
 is an assignment, the value of the right hand side is assigned to a Python variable with
 a similar name and can be used in subsequent LaTeX expressions.
+
+If you wish to see our presentation's **Google Slides**, please follow it [here](https://docs.google.com/presentation/d/1NYcR6Po-vqJWPNR_UdUPZKJZrQKUf4SI_xwPwBoXS4s/edit?usp=sharing). 
 
 ## Group Members
 Jared Amaral, Jose Arellano, Nathan Nguyen, Alex Wunderli
@@ -24,13 +26,19 @@ Jared Amaral, Jose Arellano, Nathan Nguyen, Alex Wunderli
 - Jared Amaral
   * Added coherent documentation
   * Implemented fractions, trig functions, and limits
+- Alex Wunderli
+  * Algorithm Research and overall understanding of how parser works
 
 ## Literature Review / Related Work
 * Latex Accessibility for the Visually Impaired (2018)
+    - This article shows a similar proecdure of extending latex but instead they wanted to generate PDF latex documents that are accessible for the visually impaired
+    - Shows the scopre of latex - latex is utilized by anyone and useful in all fields, having an accesible latex document that outputs pdfs would be extremely useful in creating mathematical textbooks for the visually impaired
     - “We have developed Axessibility, a LATEX package that generates PDF documents with braille bar and screen readeraccessible mathematical formulae. Our package is complemented with additional external scripts to assists authors during content creation and readers during document access via screen reader. Through a preliminary evaluation with 4 blind users we uncover that Axessibility is effective in making mathematical formulae accessible.”
     - Ahmetovic, D., Armano, T., Bernareggi, C., Berra, M., Capietto, A., Coriasco, S., Murru, N., Ruighi, A., & Taranto, E. (2018). Axessibility. In Proceedings of the 20th International ACM SIGACCESS Conference on Computers and Accessibility. ASSETS ’18: The 20th International ACM SIGACCESS Conference on Computers and Accessibility. ACM. https://doi.org/10.1145/3234695.3241029
 
 * PDF2Latex (2020)
+    - This article parses through a PDF document and using machine learning (neural networks), the program attempts to convert the PDF document into a latex coded document
+    - This would be very beneficial for older documents that include mathematical expressions and are not created in LaTex, allowing for easy adaptability of older documents to LaTex and ability to update their contents without copying entire pages by hand
     - “In this paper, we propose a novel OCR system called PDF2LaTeX, which extracts math expressions and text in both postscript and image-based PDF files and translates them into LaTeX markup … The analysis of math expressions and text is based on a series of deep learning algorithms … “
     - Wang, Z., & Liu, J.-C. (2020). PDF2LaTeX. In Proceedings of the ACM Symposium on Document Engineering 2020. DocEng ’20: ACM Symposium on Document Engineering 2020. ACM. https://doi.org/10.1145/3395027.3419580
 
@@ -54,7 +62,7 @@ The main function of the code is called `l(...)` and takes a LaTeX **r"""raw str
 
 Below are some example of what is covered (can be copy-pasted as input ). A **question mark** after an expression is a request to evaluate the expression and insert the result in the typeset output (colored **blue**). Expressions with a **top-level equal sign and a variable on the left** are interpreted as assignments that get executed by Python. Input that was parsed and evaluated without error appears in **green**, and all other expressions (without ? or =, or that generated errors) as well as text outside of $...$ math regions appear in black.
 
-## Examples
+## Example
 ```
 l(r"""
 Here we are using the l(...) command which requires $...$ to surround math expressions.
@@ -64,19 +72,8 @@ The '?' indicates that the answer should be inserted in the typeset output.
 """)
 ```
 
-```
-l(r"""
-Set comprehension has two forms: $A=\{1,\dots,100\}$, 
+**More examples** can be found by going to this following [link](https://colab.research.google.com/drive/1GxquIfefMr7ifbUvcZKuXEK1ulIDkb4n?usp=sharing) to a notebook on google collab that details examples of functionality implemented by our team. The same examples can also be found in the test.ipynb file in this repository (presented as self-contained Jupyter notebooks; just copy the whole notebook and upload it into a Colab notebook at https://colab.research.google.com).
 
-$\{x\in A\mid p(x)\}$ and $\{f(x)\mid x\in A\And p(x)\}$. In the second case the property $p(x)$ can also be omitted.
-
-Use set comprehension to list the prime numbers under 100:
-
-$\{x\in A\mid x\ne 1\And\forall {y\in A, y\vert x\implies y=1\Or y=x}\}?$
-""")
-```
-
-**More examples** can be found in the test.ipynb file (presented as self-contained Jupyter notebooks; just copy the whole notebook and upload it into a Colab notebook at https://colab.research.google.com).
 
 The following design principles are part of this project:
 
@@ -91,4 +88,16 @@ The input language covers an interesting fragment of discrete mathematics (inclu
 produce useful error messages.
 
 ## References
-This project is forked from Dr. Peter Jipsen's repository. Some of the code is credited and attributed to him. Since our respository is an experimental project with possible errors, please see his repository for fully working functionaility, although not all functionaility will be included there. 
+This project is forked from Dr. Peter Jipsen's repository. Some of the code is credited and attributed to him. Since our respository is an experimental project with possible errors, please see his repository for fully working functionaility, although not all functionaility will be included there.
+
+## Future Work
+* Create a robust error message system
+    - Catch exceptions and prevent code from shutting down with incorrect inputs
+       * Modify parser to catch these exceptions
+    - Help the user understand exactly what the problem is and how to fix it
+        * when exceptions or errors are caught, output where the error occured and possibly how to fix depending on whether the program can detect error
+* Add more math functions
+    - Possible implementation of numpy (for matrix operations and other linear algebra operations)
+       * Similar to Sympy inclusion - add numpy functions and modify parser and prefixes accordingly 
+* Ultimate goal for a finished product is the ablity to parse and run anything that is mathematically sound and written in laTex 
+
