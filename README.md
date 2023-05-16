@@ -16,18 +16,27 @@ a similar name and can be used in subsequent LaTeX expressions.
 If you wish to see our presentation's **Google Slides**, please follow it [here](https://docs.google.com/presentation/d/1NYcR6Po-vqJWPNR_UdUPZKJZrQKUf4SI_xwPwBoXS4s/edit?usp=sharing). 
 
 ## Group Members
-Jared Amaral, Jose Arellano, Nathan Nguyen, Alex Wunderli
+Jared Amaral,  Nathan Nguyen, Alex Wunderli
 
 ## Contributions
 - Nathan Nguyen: 
-  * README formatting
   * Researched literature and related work
-  * Added extra documention in code
+  * README/Project repo description
+  * Added extra documentation in code
+      * Added comments on what each function does to better help anyone understand how to use the code and modify it for other uses
+  * Implemented part of integrals, helped code where needed
+  * Worked with Dr. Jipsen to possibly extend code to Jupyter Notebook (unfinished functionality) 
+
 - Jared Amaral
   * Added coherent documentation
-  * Implemented fractions, trig functions, and limits
+  * Worked with Dr. Jipsen to implement prefixes
+  * Implemented sympy functionality with lambda calculus
+
 - Alex Wunderli
+  * Created test cases  
   * Algorithm Research and overall understanding of how parser works
+  * Helped code overall where needed
+
 
 ## Literature Review / Related Work
 * Latex Accessibility for the Visually Impaired (2018)
