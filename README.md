@@ -16,42 +16,7 @@ a similar name and can be used in subsequent LaTeX expressions.
 If you wish to see our presentation's **Google Slides**, please follow it [here](https://docs.google.com/presentation/d/1NYcR6Po-vqJWPNR_UdUPZKJZrQKUf4SI_xwPwBoXS4s/edit?usp=sharing). 
 
 ## Group Members
-Jared Amaral,  Nathan Nguyen, Alex Wunderli
-
-## Contributions
-- Nathan Nguyen: 
-  * Researched literature and related work
-  * README/Project repo description
-  * Added extra documentation in code
-      * Added comments on what each function does to better help anyone understand how to use the code and modify it for other uses
-  * Implemented part of integrals, helped code where needed
-  * Worked with Dr. Jipsen to possibly extend code to Jupyter Notebook (unfinished functionality) 
-
-- Jared Amaral
-  * Added coherent documentation
-  * Worked with Dr. Jipsen to implement prefixes
-  * Implemented sympy functionality with lambda calculus
-
-- Alex Wunderli
-  * Created test cases  
-  * Algorithm Research and overall understanding of how parser works
-  * Helped code overall where needed
-
-
-## Literature Review / Related Work
-* Latex Accessibility for the Visually Impaired (2018)
-    - This article shows a similar proecdure of extending latex but instead they wanted to generate PDF latex documents that are accessible for the visually impaired
-    - Shows the scopre of latex - latex is utilized by anyone and useful in all fields, having an accesible latex document that outputs pdfs would be extremely useful in creating mathematical textbooks for the visually impaired
-    - “We have developed Axessibility, a LATEX package that generates PDF documents with braille bar and screen readeraccessible mathematical formulae. Our package is complemented with additional external scripts to assists authors during content creation and readers during document access via screen reader. Through a preliminary evaluation with 4 blind users we uncover that Axessibility is effective in making mathematical formulae accessible.”
-    - Ahmetovic, D., Armano, T., Bernareggi, C., Berra, M., Capietto, A., Coriasco, S., Murru, N., Ruighi, A., & Taranto, E. (2018). Axessibility. In Proceedings of the 20th International ACM SIGACCESS Conference on Computers and Accessibility. ASSETS ’18: The 20th International ACM SIGACCESS Conference on Computers and Accessibility. ACM. https://doi.org/10.1145/3234695.3241029
-
-* PDF2Latex (2020)
-    - This article parses through a PDF document and using machine learning (neural networks), the program attempts to convert the PDF document into a latex coded document
-    - This would be very beneficial for older documents that include mathematical expressions and are not created in LaTex, allowing for easy adaptability of older documents to LaTex and ability to update their contents without copying entire pages by hand
-    - “In this paper, we propose a novel OCR system called PDF2LaTeX, which extracts math expressions and text in both postscript and image-based PDF files and translates them into LaTeX markup … The analysis of math expressions and text is based on a series of deep learning algorithms … “
-    - Wang, Z., & Liu, J.-C. (2020). PDF2LaTeX. In Proceedings of the ACM Symposium on Document Engineering 2020. DocEng ’20: ACM Symposium on Document Engineering 2020. ACM. https://doi.org/10.1145/3395027.3419580
-
-
+Jared Amaral,  Maverick Wadman, Alex Haberman
 
 ## Setup Instructions
 It is recommended to use this code in a Colab Jupyter notebook freely available at 
