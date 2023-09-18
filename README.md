@@ -1,5 +1,8 @@
 # LaTeXPy
 
+## Group Members
+Jared Amaral,  Maverick Wadman, Alex Haberman
+
 ## Introduction
 Latex is utilized in mathematics, physics, economics, and more as the leading text formatting language for typesetting mathematics. The interest for language lies mostly for those who wish to type mathematics in a formal, simple and clean method, allowing others to easily see documents related to math easily and clearly. Current versions of Latex, however, cannot perform operations within text, which would a useful function for calculating mathematical expressions while typsetting instead of going onto an external site. Our project extends Dr. Peter Jipsen's project and current work with the LatexPy program, and includes functionality seen in Calculus, such as derivatives, summations, integrals, limits, and trigometric functions. 
 
@@ -12,11 +15,6 @@ by $ or $$) and (attempts to) translate them to valid Python code. This code is 
 Python and the resulting value (if any) is inserted into the LaTeX file. If the math expression
 is an assignment, the value of the right hand side is assigned to a Python variable with
 a similar name and can be used in subsequent LaTeX expressions.
-
-If you wish to see our presentation's **Google Slides**, please follow it [here](https://docs.google.com/presentation/d/1NYcR6Po-vqJWPNR_UdUPZKJZrQKUf4SI_xwPwBoXS4s/edit?usp=sharing). 
-
-## Group Members
-Jared Amaral,  Maverick Wadman, Alex Haberman
 
 ## Setup Instructions
 It is recommended to use this code in a Colab Jupyter notebook freely available at 
