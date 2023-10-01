@@ -1,5 +1,11 @@
 # LaTeXPy
 
+## Group Members
+Jared Amaral,  Maverick Wadman, Alex Haberman
+
+## Introduction
+Latex is utilized in mathematics, physics, economics, and more as the leading text formatting language for typesetting mathematics. The interest for language lies mostly for those who wish to type mathematics in a formal, simple and clean method, allowing others to easily see documents related to math easily and clearly. Current versions of Latex, however, cannot perform operations within text, which would a useful function for calculating mathematical expressions while typsetting instead of going onto an external site. Our project extends Dr. Peter Jipsen's project and current work with the LatexPy program, and includes functionality seen in Calculus, such as derivatives, summations, integrals, limits, and trigometric functions. 
+
 The aim of this project is to use LaTeX as a high-level mathematical calculator syntax 
 that can be used in undergraduate education by students who know or learn some basic LaTeX, 
 but they should not need to know any Python.
@@ -10,87 +16,60 @@ Python and the resulting value (if any) is inserted into the LaTeX file. If the 
 is an assignment, the value of the right hand side is assigned to a Python variable with
 a similar name and can be used in subsequent LaTeX expressions.
 
+## Setup Instructions
 It is recommended to use this code in a Colab Jupyter notebook freely available at 
 https://colab.research.google.com (use a free gmail account to login to Colab).
 
 **Step 1:** Click on the link above, and start a new Colab notebook (use **File->New notebook** on the webpage menu, **not** on your computer menu).
 
-**Step 2:** Copy the following lines into the first notebook cell and click the red start button to install LaTeXPy. This takes about 30 seconds since it installs the Prover9 theorem prover on the Google server (nothing is installed on your computer).
+**Step 2:** Copy the following lines into the first notebook cell and click the red start button to install LaTeXPy. This takes a few seconds since it installs `latex2sympy2` on the colab server (nothing is installed or modified on your computer).
 ```
 !rm -rf LaTeXPy #remove any previous version
-!git clone https://github.com/jipsen/LaTeXPy.git
-import sys; sys.path.append('/content/LaTeXPy'); import LaTeXPy as l
+!git clone https://github.com/amaraljt/LaTeXPy.git
+execfile("/content/LaTeXPy/LaTeXPy.py")
 ```
 **Step 3:** Copy some of the examples below to see how to do various calculations using the LaTeX syntax that is valid with this script.
 
-The main function of the code is called `l.l(...)` and takes a **r"""raw string"""** as input. (A **rawstring** in Python starts with r" and in such strings the backslash is an ordinary character. The triple-quotes """ are used for strings that extend over several lines. If something doesn't work it may help to add a second input in the form `l.l(rawstring, 1)` then some diagnostic output is printed as well.)
+The main function of the code is called `l(...)` and takes a LaTeX **r"""raw string"""** as input. (A **rawstring** in Python starts with r" and in such strings the backslash is an ordinary character. The triple-quotes """ are used for strings that extend over several lines. If something doesn't work it may help to add a second input in the form `l(rawstring, 1)` then some diagnostic output is printed as well.)
 
 Below are some example of what is covered (can be copy-pasted as input ). A **question mark** after an expression is a request to evaluate the expression and insert the result in the typeset output (colored **blue**). Expressions with a **top-level equal sign and a variable on the left** are interpreted as assignments that get executed by Python. Input that was parsed and evaluated without error appears in **green**, and all other expressions (without ? or =, or that generated errors) as well as text outside of $...$ math regions appear in black.
 
+## Example
 ```
-l.l(r"""
-Here we are using the l.l(...) command which requires $...$ to surround the math parts and it also assumes that
-the parser should translate to Python (rather than to Prover9) syntax.
+l(r"""
+Here we are using the l(...) command which requires $...$ to surround math expressions.
 
 Arithmetic expressions are written in calculator style, e.g., $1+2\cdot 4/4^2 ?$. 
 The '?' indicates that the answer should be inserted in the typeset output.
-```
-
-```
-l.l(r"""
-Sets are finite and can contain numbers, unevaluated expressions and 
-other (finite) sets e.g., $A=\{2,a,b,\gamma,\delta\}?$.
-
-Standard set-operations are available: $A\cap \{1,2,3,b\}?$, $A\cup \{1,2,3,b\}?$, 
-$A\setminus \{1,2,3,b\}?$, $A\oplus \{1,2,3,b\}?$.
-```
-
-```
-l.l(r"""
-Ranges $\{3,\dots,10\}?$, cartesian product $\{1,2,3\}\times\{a,b\}?$.
-
-Powerset $P=\mathcal{P}(\{1,2,3,4\})?$ 
-
-Cardinality $|P|?$
-
-A lattice of subsets can be displayed using $show(P)$ (it is shown before the rest of the output).
-```
-
-```
-l.l(r"""
-Lists use [...] syntax: $L=[a,b,c]$ and subscripts access elements. 
-The first element is $L_0?$, and if $i=2$ then $L_i?$.
-
-Tuples use \tup{...} syntax: $u=\tup{a,b,c}?$ and again subscripts are used to access elements. 
-The last element is $u_{-1}?$, and if $i=1$ then $u_i?$.
-
-(Note: using v as a variable is a bug since it is interpreted as join (in Prover9). This needs to be fixed)
 """)
 ```
 
-```
-l.l(r"""
-Set comprehension has two forms: $A=\{1,\dots,100\}$, 
+**More examples** can be found by going to this following [link](https://colab.research.google.com/drive/1Ngd4wNIEkw5jjAjwxavwV5PybXkWFRb0?usp=sharing) to a notebook on google collab that details examples of functionality implemented by our team. The same examples can also be found in the test.ipynb file in this repository (presented as self-contained Jupyter notebooks; just copy the whole notebook and upload it into a Colab notebook at https://colab.research.google.com).
 
-$\{x\in A\mid p(x)\}$ and $\{f(x)\mid x\in A\And p(x)\}$. In the second case the property $p(x)$ can also be omitted.
-
-Use set comprehension to list the prime numbers under 100:
-
-$\{x\in A\mid x\ne 1\And\forall {y\in A, y\vert x\implies y=1\Or y=x}\}?$
-""")
-```
-
-**More examples** can be found in the Examples folder (presentend as self-contained Jupyter notebooks; just copy the whole notebook and upload it into a Colab notebook at https://colab.research.google.com).
 
 The following design principles are part of this project:
 
 1. The LaTeX input is written using standard mathematical/logical notation.
 2. Input and output can be copy-pasted from and to standard LaTeX documents.
 3. LaTeXPy is intended to be used in a Jupyter notebook environment. It makes use of the display module (for LaTeX and Markdown) and the graphviz module (for graphs and Hasse diagrams).
-4. The parser does not require a parser generator. Local modifications and extensions should be fairly easy to make for someone familiar with Python.
-5. The LaTeX interface connects with automated theorem provers and model finders (currently Prover9/Mace4). Future syntax extensions may include other provers, SMT-solvers and mathematical Python modules like SymPy and NumPy.
+4. The parser does not require a parser generator. Local modifications and extensions should be fairly easy to make for someone familiar with Python. Currently the `latex2sympy2` package is also used.
+5. The LaTeX interface connects with automated theorem provers and model finders (currently Prover9/Mace4). Future syntax extensions may include other automated provers and SMT-solvers. *NOTE: This version of LaTeXPy does not implement model finders, Prover9 due to dependency issues.
 
 The current version of LaTeXPy.py is experimental and intended to get feedback on design decisions.
-The input language covers an interesting fragment of discrete mathematics (including finite sets 
-and first-order logic), but the syntax is still evolving and incorrect input currently does not 
+The input language covers an interesting fragment of discrete mathematics (including finite sets, first-order logic and some `SymPy` functionality), but the syntax is still evolving and incorrect input currently does not 
 produce useful error messages.
+
+## References
+This project is forked from Dr. Peter Jipsen's repository. Some of the code is credited and attributed to him. Since our respository is an experimental project with possible errors, please see his repository for fully working functionaility, although not all functionaility will be included there.
+
+## Future Work
+* Create a robust error message system
+    - Catch exceptions and prevent code from shutting down with incorrect inputs
+       * Modify parser to catch these exceptions
+    - Help the user understand exactly what the problem is and how to fix it
+        * when exceptions or errors are caught, output where the error occured and possibly how to fix depending on whether the program can detect error
+* Add more math functions
+    - Possible implementation of numpy (for matrix operations and other linear algebra operations)
+       * Similar to Sympy inclusion - add numpy functions and modify parser and prefixes accordingly 
+* Ultimate goal for a finished product is the ablity to parse and run anything that is mathematically sound and written in laTex 
+
