@@ -587,13 +587,14 @@ def process(st, info=False, nocolor=False):
   # if(str(t) != '(end)'):
   #   exp_out.append(str(t)) # append values to a list
   
+  if str(t) in exp_out or str(t) == '(end)' or '_' in str(t) or str(t) == '\t(end)': 
+    pass
+  else: 
+    exp_out.append(str(t))
+  
   if info:
     print("Abstract syntax tree:", ast(t))
     print("Expression:", t)
-    if str(t) in exp_out or str(t) == '(end)' or '_' in str(t) or str(t) == '\t(end)': 
-      pass
-    else: 
-      exp_out.append(str(t))
     
   # print("expression out:")
   # print(exp_out[:])
@@ -725,7 +726,7 @@ def expressions_to_str(exp_list):
   for expr in exp_list:
     if expr == '(end)':
         code += '\n'
-    elif expr == '_EndIf':
+    elif expr[0] == '_':
         code += '    pass\n'
     else:
         code += expr + '\n'
