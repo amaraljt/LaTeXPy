@@ -419,6 +419,7 @@ def init_symbol_table():
     prefixAlg("\\While",310).__repr__ = lambda x: "while " + str(x.a[0]) + ":"
     prefixAlg("\\For",310).__repr__ = lambda x: "for " + str(x.a[0]) + ":"
     infix("\\gets",345).__repr__ = lambda x: w2(x,0) + " = "+ w2(x,1)
+    prefix2("\\Function",310).__repr__ = lambda x: "def " + str(x.a[0]) + "(" + str(x.a[1]) + "):"
     
     
     
@@ -584,13 +585,12 @@ def process(st, info=False, nocolor=False):
   
   # tokenizes and grabs the value from the token
   t = parse(st)
-  # if(str(t) != '(end)'):
-  #   exp_out.append(str(t)) # append values to a list
   
   if str(t) in exp_out or str(t) == '(end)' or '_' in str(t) or str(t) == '\t(end)': 
     pass
   else: 
     exp_out.append(str(t))
+    
   
   if info:
     print("Abstract syntax tree:", ast(t))
