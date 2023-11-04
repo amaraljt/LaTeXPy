@@ -736,6 +736,7 @@ print("set _first_dir")
 
 def save():
     print("save function")
+    print("length of dir: ", len(dir()))
     for name in dir():
         if name not in _first_dir:
             print(name)
