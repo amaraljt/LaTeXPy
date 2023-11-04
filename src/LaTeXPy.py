@@ -733,10 +733,10 @@ def m(st, info=False, output=False, nocolor=False):
   display(Markdown(out))
   if output: print(out)
 
-# # turns dir() into a list, then makes a dictionary out of that list
-# # used by save() function
-# _first_dir = dict([(name,None) for name in dir()])
-# print("set _first_dir")
+# turns dir() into a list, then makes a dictionary out of that list
+# used by save() function
+_first_dir = dict([(name,None) for name in dir()])
+print("set _first_dir")
 
 # part of save() feature: creates a set that will contain all assignments made by the user
 assignment_dict = {}
@@ -746,11 +746,12 @@ def save():
     print("save function")
     # print("length of dir(): ", len(dir()))
     # print("length of dir('__main__'): ", len(dir("__main__")))
-    # print("length of _first_dir: ", len(_first_dir))
-    # for name in dir("__main__"):
-    #     if name not in _first_dir:
-    #         print(name)
-    for name in assignment_dict:
-        print(name)
+    print("length of globals(): ", len(globals())
+    print("length of _first_dir: ", len(_first_dir))
+    for name in globals():
+        if name not in _first_dir:
+            print(name)
+    # for name in assignment_dict:
+    #     print(name)
 
 prvrs="Model" in dir() # check if provers module is loaded
