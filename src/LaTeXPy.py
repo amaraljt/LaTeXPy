@@ -729,7 +729,14 @@ def m(st, info=False, output=False, nocolor=False):
   display(Markdown(out))
   if output: print(out)
 
+# turns dir() into a list, then makes a dictionary out of that list
+# used by save() function
+_first_dir = dict([(name,None) for name in dir()])
+
 def save():
     print("save function")
+    for name in dir():
+        if name not in _first_dir:
+            print(name)
 
 prvrs="Model" in dir() # check if provers module is loaded
