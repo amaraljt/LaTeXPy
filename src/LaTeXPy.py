@@ -735,6 +735,7 @@ _first_dir = dict([(name,None) for name in dir()])
 print("set _first_dir")
 
 def save():
+    monkey = 5
     print("save function")
     print("length of dir: ", len(dir()))
     print("length of _first_dir: ", len(_first_dir))
