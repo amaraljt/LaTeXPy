@@ -737,9 +737,10 @@ print("set _first_dir")
 def save():
     monkey = 5
     print("save function")
-    print("length of dir: ", len(dir()))
+    print("length of dir(): ", len(dir()))
+    print("length of dir(__name__): ", len(dir(__name__)))
     print("length of _first_dir: ", len(_first_dir))
-    for name in dir():
+    for name in dir(__name__):
         if name not in _first_dir:
             print(name)
 
