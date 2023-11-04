@@ -746,7 +746,7 @@ def save():
     print("save function")
     # print("length of dir(): ", len(dir()))
     # print("length of dir('__main__'): ", len(dir("__main__")))
-    print("length of globals(): ", len(globals())
+    print("length of globals(): ", len(globals()))
     print("length of _first_dir: ", len(_first_dir))
     for name in globals():
         if name not in _first_dir:
