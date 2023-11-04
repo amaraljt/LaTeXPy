@@ -3,6 +3,9 @@
 ## Group Members
 Jared Amaral,  Maverick Wadman, Alex Haberman
 
+## 11/1/23 Update
+Please go to the ``prototype`` folder and follow the README to run our updated program.
+
 ## Introduction
 Latex is utilized in mathematics, physics, economics, and more as the leading text formatting language for typesetting mathematics. The interest for language lies mostly for those who wish to type mathematics in a formal, simple and clean method, allowing others to easily see documents related to math easily and clearly. Current versions of Latex, however, cannot perform operations within text, which would a useful function for calculating mathematical expressions while typsetting instead of going onto an external site. Our project extends Dr. Peter Jipsen's project and current work with the LatexPy program, and includes functionality seen in Calculus, such as derivatives, summations, integrals, limits, and trigometric functions. 
 
