@@ -732,6 +732,7 @@ def m(st, info=False, output=False, nocolor=False):
 # turns dir() into a list, then makes a dictionary out of that list
 # used by save() function
 _first_dir = dict([(name,None) for name in dir()])
+print("set _first_dir")
 
 def save():
     print("save function")
