@@ -8,7 +8,7 @@ https://colab.research.google.com (use a free gmail account to login to Colab).
 ```
 !rm -rf LaTeXPy #remove any previous version
 !git clone https://github.com/amaraljt/LaTeXPy.git
-execfile("/prototype/PsuedocodePy.py")
+execfile("/content/LaTeXPy/prototype/PseudocodePy.py")
 ```
 **Step 3:** Copy some of the examples below to see how to do various calculations using the LaTeX syntax that is valid with this script.
 
