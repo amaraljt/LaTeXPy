@@ -729,4 +729,7 @@ def m(st, info=False, output=False, nocolor=False):
   display(Markdown(out))
   if output: print(out)
 
+def save():
+    print("save function")
+
 prvrs="Model" in dir() # check if provers module is loaded
