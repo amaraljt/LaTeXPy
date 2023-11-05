@@ -753,6 +753,7 @@ def save():
     #     if name not in _first_dir:
     #         print(name)
     for name in assignment_dict:
-        print(name)
+        value = get_ipython().user_ns[name]
+        print(name, " = %r" % (value,))
 
 prvrs="Model" in dir() # check if provers module is loaded
