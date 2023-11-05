@@ -37,6 +37,8 @@ The main function of the code is called `l(...)` and takes a LaTeX **r"""raw str
 
 Below are some example of what is covered (can be copy-pasted as input ). A **question mark** after an expression is a request to evaluate the expression and insert the result in the typeset output (colored **blue**). Expressions with a **top-level equal sign and a variable on the left** are interpreted as assignments that get executed by Python. Input that was parsed and evaluated without error appears in **green**, and all other expressions (without ? or =, or that generated errors) as well as text outside of $...$ math regions appear in black.
 
+To save all assignments you have made to a file, call the save() function in a code cell. It takes an optional string argument for the filename.
+
 ## Example
 ```
 l(r"""
