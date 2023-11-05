@@ -52,7 +52,7 @@ p(r"""
   """)
 ```
 
-## While Loop
+## While Loop (in development)
 ```
 p(r"""
   \algb
