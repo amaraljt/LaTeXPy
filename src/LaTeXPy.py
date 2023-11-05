@@ -737,23 +737,21 @@ def m(st, info=False, output=False, nocolor=False):
   display(Markdown(out))
   if output: print(out)
 
-# turns dir() into a list, then makes a dictionary out of that list
-# used by save() function
-_first_dir = dict([(name,None) for name in dir()])
-print("set _first_dir")
+# # turns dir() into a list, then makes a dictionary out of that list
+# # used by save() function
+# _first_dir = dict([(name,None) for name in dir()])
+# print("set _first_dir")
 
 # part of save() feature: creates a set that will contain all assignments made by the user
 assignment_dict = {}
 
-def save():
+def save(filename = "save_file.txt"):
     print("save function")
-    # print("length of get_ipython().user_ns: ", len(get_ipython().user_ns))
-    # print("length of _first_dir: ", len(_first_dir))
-    # for name in get_ipython().user_ns:
-    #     if name not in _first_dir:
-    #         print(name)
+    f = open(filename, "w")
     for name in assignment_dict:
         value = get_ipython().user_ns[name]
-        print(name, " = %r" % (value,))
+        print(name, "= %r" % (value,), file=f)
+    f.close()
+    print("saved %d definitions to file %r" % (len(assignment_dict), filename))
 
 prvrs="Model" in dir() # check if provers module is loaded
