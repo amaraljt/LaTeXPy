@@ -38,7 +38,7 @@ p(r"""
   """)
 ```
 
-## For Loop
+## For Loop (in development)
 ```
 p(r"""
   \algb
@@ -52,7 +52,7 @@ p(r"""
   """)
 ```
 
-## While Loop (in development)
+## While Loop
 ```
 p(r"""
   \algb
