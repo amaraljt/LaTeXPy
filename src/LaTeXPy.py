@@ -687,6 +687,10 @@ def process(st, info=False, nocolor=False):
     except:
       if info: print("no result")
       return macros+st
+    # (part of save() feature)
+    assignment_name = ss.split("=")[0].strip() # gets the part of ss before an equals sign, without whitespace
+    assignment_dict[assignment_name] = None
+    # (end)
     return ("" if nocolor else "\color{green}")+macros+st+("" if nocolor else "\color{deepskyblue}")+" = "+pyla(eval(str(tt.a[0])))
   try:
     val=eval(str(tt))
@@ -743,12 +747,12 @@ assignment_dict = {}
 
 def save():
     print("save function")
-    print("length of get_ipython().user_ns: ", len(get_ipython().user_ns))
-    print("length of _first_dir: ", len(_first_dir))
-    for name in get_ipython().user_ns:
-        if name not in _first_dir:
-            print(name)
-    # for name in assignment_dict:
-    #     print(name)
+    # print("length of get_ipython().user_ns: ", len(get_ipython().user_ns))
+    # print("length of _first_dir: ", len(_first_dir))
+    # for name in get_ipython().user_ns:
+    #     if name not in _first_dir:
+    #         print(name)
+    for name in assignment_dict:
+        print(name)
 
 prvrs="Model" in dir() # check if provers module is loaded
