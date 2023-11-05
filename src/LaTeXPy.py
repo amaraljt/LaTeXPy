@@ -742,13 +742,10 @@ print("set _first_dir")
 assignment_dict = {}
 
 def save():
-    # monkey = 5
     print("save function")
-    # print("length of dir(): ", len(dir()))
-    # print("length of dir('__main__'): ", len(dir("__main__")))
-    print("length of globals(): ", len(globals()))
+    print("length of get_ipython().user_ns: ", len(get_ipython().user_ns))
     print("length of _first_dir: ", len(_first_dir))
-    for name in globals():
+    for name in get_ipython().user_ns:
         if name not in _first_dir:
             print(name)
     # for name in assignment_dict:
