@@ -673,6 +673,10 @@ def process(st, info=False, nocolor=False):
     except:
       if info: print("no result")
       return macros+st
+    # (part of save() feature)
+    assignment_name = ss.split("=")[0].strip() # gets the part of ss before an equals sign, without whitespace
+    assignment_dict[assignment_name] = None
+    # (end)
     return ("" if nocolor else "\color{green}")+macros+st
   tt = t.a[0]
   st = st.replace("?","")
@@ -683,6 +687,10 @@ def process(st, info=False, nocolor=False):
     except:
       if info: print("no result")
       return macros+st
+    # (part of save() feature)
+    assignment_name = ss.split("=")[0].strip() # gets the part of ss before an equals sign, without whitespace
+    assignment_dict[assignment_name] = None
+    # (end)
     return ("" if nocolor else "\color{green}")+macros+st+("" if nocolor else "\color{deepskyblue}")+" = "+pyla(eval(str(tt.a[0])))
   try:
     val=eval(str(tt))
@@ -728,5 +736,17 @@ def m(st, info=False, output=False, nocolor=False):
   out = "$"+"$\n\n$".join(process(x.strip(),info,nocolor) for x in li)+"$"
   display(Markdown(out))
   if output: print(out)
+
+# part of save() feature: creates a set that will contain all assignments made by the user
+assignment_dict = {}
+
+def save(filename = "save_file.txt"):
+    print("save function")
+    f = open(filename, "w")
+    for name in assignment_dict:
+        value = get_ipython().user_ns[name]
+        print(name, "= %r" % (value,), file=f)
+    f.close()
+    print("saved %d definitions to file %r" % (len(assignment_dict), filename))
 
 prvrs="Model" in dir() # check if provers module is loaded
