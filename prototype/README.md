@@ -38,20 +38,6 @@ p(r"""
   """)
 ```
 
-## For Loop
-```
-p(r"""
-  \algb
-    $i \gets 1$
-    \For{i < 5}
-      \State x \gets x \cdot 2
-      \State $i \gets i + 1$
-    \EndFor
-    \State \Output x
-  \alge
-  """)
-```
-
 ## While Loop
 ```
 p(r"""
@@ -61,6 +47,19 @@ p(r"""
       \State \Output i
       \State $x \gets x - 1$
     \EndWhile
+  \alge
+  """)
+```
+## For Loop (in development)
+```
+p(r"""
+  \algb
+    $i \gets 1$
+    \For{i < 5}
+      \State x \gets x \cdot 2
+      \State $i \gets i + 1$
+    \EndFor
+    \State \Output x
   \alge
   """)
 ```
